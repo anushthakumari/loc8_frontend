@@ -60,8 +60,8 @@ const navs = [
 	// 	Icon: PersonAddAlt1Icon,
 	// },
 	{
-		title: "Contents",
-		link: "/contents",
+		title: "videos",
+		link: "/videos",
 		Icon: OndemandVideoIcon,
 	},
 	{

@@ -21,9 +21,9 @@ import Select from "@mui/material/Select";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import { Button, Stack } from "@mui/material";
 
 import SuperAdminLayout from "../layouts/SuperAdminLayout";
+import { Button, Stack } from "@mui/material";
 
 function createData(firstName, lastName, email, link, createdAt) {
 	return { firstName, lastName, email, link, createdAt };
@@ -47,7 +47,7 @@ const rows = [
 	),
 ];
 
-const AdminList = () => {
+const PlannerList = () => {
 	const [isFormOpen, setisFormOpen] = useState(false);
 
 	const handleClose = () => {
@@ -59,15 +59,15 @@ const AdminList = () => {
 	};
 
 	return (
-		<SuperAdminLayout activeLink="/admins">
+		<SuperAdminLayout activeLink="/planners">
 			<Stack
 				direction={"row"}
 				alignItems={"center"}
 				justifyContent={"space-between"}
 				mb={2}>
-				<Typography variant="h4">Admins</Typography>
+				<Typography variant="h4">Planners</Typography>
 				<Button variant="contained" onClick={openForm}>
-					Add Admin
+					Add Planner
 				</Button>
 			</Stack>
 			<TableContainer component={Paper}>
@@ -103,12 +103,12 @@ const AdminList = () => {
 			<Dialog
 				open={isFormOpen}
 				onClose={handleClose}
-				aria-labelledby="add-admin-title"
-				aria-describedby="add-admin-description">
-				<DialogTitle id="add-admin-title">{"Add An Admin"}</DialogTitle>
+				aria-labelledby="add-planner-title"
+				aria-describedby="add-planner-description">
+				<DialogTitle id="add-planner-title">{"Add A planner"}</DialogTitle>
 				<DialogContent component="form">
-					<DialogContentText mb={2} id="add-admin-description">
-						Fill the form to add an admin.
+					<DialogContentText mb={2} id="add-planner-description">
+						Fill the form to add an planner.
 					</DialogContentText>
 
 					<Box noValidate sx={{ mt: 3 }}>
@@ -183,4 +183,4 @@ const AdminList = () => {
 	);
 };
 
-export default AdminList;
+export default PlannerList;
