@@ -1,25 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
+import { RouterProvider } from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Link from "@mui/material/Link";
+
+import { authRouter, superAdminRouter } from "./routes";
+
+import useAuth from "./hooks/useAuth";
+
+export default function App() {
+	const user = useAuth();
+
+	if (!user) {
+		return <RouterProvider router={authRouter} />;
+	}
+
+	return <RouterProvider router={superAdminRouter} />;
 }
-
-export default App;
