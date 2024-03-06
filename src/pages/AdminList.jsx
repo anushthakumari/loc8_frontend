@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import useSWR from "swr";
 
 import Typography from "@mui/material/Typography";
 import Table from "@mui/material/Table";
@@ -21,9 +22,11 @@ import Select from "@mui/material/Select";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, CircularProgress } from "@mui/material";
 
 import SuperAdminLayout from "../layouts/SuperAdminLayout";
+
+import { getAdminsAPI } from "../apis/admins.apis";
 
 function createData(firstName, lastName, email, link, createdAt) {
 	return { firstName, lastName, email, link, createdAt };
@@ -50,6 +53,8 @@ const rows = [
 const AdminList = () => {
 	const [isFormOpen, setisFormOpen] = useState(false);
 
+	const { data, error, isLoading } = useSWR("/admins", getAdminsAPI);
+
 	const handleClose = () => {
 		setisFormOpen(false);
 	};
@@ -60,6 +65,14 @@ const AdminList = () => {
 
 	return (
 		<SuperAdminLayout activeLink="/admins">
+			{isLoading ? (
+				<center>
+					<Stack direction={"row"} alignItems={"center"} gap={1}>
+						<CircularProgress size={18} />
+						Loading...
+					</Stack>
+				</center>
+			) : null}
 			<Stack
 				direction={"row"}
 				alignItems={"center"}
@@ -82,16 +95,16 @@ const AdminList = () => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{rows.map((row) => (
+						{[].map((row) => (
 							<TableRow
-								key={row.name}
+								key={row.id}
 								sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
 								<TableCell component="th" scope="row">
-									{row.firstName}
+									{row.first_name}
 								</TableCell>
-								<TableCell>{row.lastName}</TableCell>
+								<TableCell>{row.last_name}</TableCell>
 								<TableCell>{row.email}</TableCell>
-								<TableCell>{row.createdAt}</TableCell>
+								<TableCell>{row.created_at}</TableCell>
 								<TableCell>
 									<Link to={row.link}>View Details</Link>
 								</TableCell>

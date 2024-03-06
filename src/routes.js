@@ -7,6 +7,7 @@ import Marketting from "./pages/Marketting";
 import AddVideo from "./pages/AddVideo";
 import Videos from "./pages/videos";
 import PlannerList from "./pages/PlannerList";
+import Test from "./pages/Test";
 
 export const authRouter = createBrowserRouter([
 	{
@@ -43,5 +44,19 @@ export const superAdminRouter = createBrowserRouter([
 	{
 		path: "/videos",
 		element: <Videos />,
+	},
+]);
+
+export const adminRouter = createBrowserRouter([
+	{
+		path: "/",
+		element: <Test />,
+	},
+]);
+
+export const plannerRouter = createBrowserRouter([
+	{
+		path: "/",
+		element: <Test />,
 	},
 ]);

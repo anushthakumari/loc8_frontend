@@ -1,7 +1,7 @@
 const roles = {
-	USER: 1,
-	SUPERVISIOR: 2,
-	ADMIN: 3,
+	PLANNER: 1,
+	ADMIN: 2,
+	SUPERADMIN: 3,
 };
 
 export default roles;

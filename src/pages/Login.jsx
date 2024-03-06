@@ -14,19 +14,34 @@ import AuthHeader from "../components/AuthHeader";
 
 import { useAuthState } from "../contexts/AuthProvider";
 
+import { login } from "../apis/auth.apis";
+
 export default function Login() {
+	const [isLoading, setisLoading] = React.useState(false);
 	const { saveUser } = useAuthState();
 	const navigate = useNavigate();
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
-		saveUser({
-			email: data.get("email"),
-			password: data.get("password"),
-		});
 
-		navigate("/");
+		setisLoading(true);
+
+		login(data.get("email"), data.get("password"))
+			.then((data) => {
+				saveUser(data);
+				navigate("/");
+			})
+			.catch((e) => {
+				const msg =
+					e.response && e.response?.data?.message
+						? e.response.data.message
+						: "Something went wrong!";
+				alert(msg);
+			})
+			.finally(() => {
+				setisLoading(false);
+			});
 	};
 
 	return (
@@ -71,6 +86,7 @@ export default function Login() {
 							type="submit"
 							fullWidth
 							variant="contained"
+							disabled={isLoading}
 							sx={{ mt: 3, mb: 2 }}>
 							Sign In
 						</Button>

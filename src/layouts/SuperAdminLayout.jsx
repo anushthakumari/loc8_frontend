@@ -129,8 +129,8 @@ export default function SuperAdminLayout({ children, activeLink }) {
 	const handleLogout = () => {
 		saveUser(null);
 		setTimeout(() => {
-			navigate("/login");
-		}, 500);
+			navigate("/");
+		}, 1000);
 	};
 
 	return (
