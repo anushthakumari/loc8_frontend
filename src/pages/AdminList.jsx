@@ -27,6 +27,7 @@ import { Button, Stack, CircularProgress } from "@mui/material";
 import SuperAdminLayout from "../layouts/SuperAdminLayout";
 
 import { getAdminsAPI } from "../apis/admins.apis";
+import { getZonesAPI } from "../apis/location.apis";
 
 function createData(firstName, lastName, email, link, createdAt) {
 	return { firstName, lastName, email, link, createdAt };
@@ -54,6 +55,7 @@ const AdminList = () => {
 	const [isFormOpen, setisFormOpen] = useState(false);
 
 	const { data, error, isLoading } = useSWR("/admins", getAdminsAPI);
+	const zoneDataResp = useSWR("/location/zones", getZonesAPI);
 
 	const handleClose = () => {
 		setisFormOpen(false);
@@ -65,7 +67,7 @@ const AdminList = () => {
 
 	return (
 		<SuperAdminLayout activeLink="/admins">
-			{isLoading ? (
+			{isLoading || zoneDataResp.isLoading ? (
 				<center>
 					<Stack direction={"row"} alignItems={"center"} gap={1}>
 						<CircularProgress size={18} />
@@ -95,21 +97,23 @@ const AdminList = () => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{[].map((row) => (
-							<TableRow
-								key={row.id}
-								sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-								<TableCell component="th" scope="row">
-									{row.first_name}
-								</TableCell>
-								<TableCell>{row.last_name}</TableCell>
-								<TableCell>{row.email}</TableCell>
-								<TableCell>{row.created_at}</TableCell>
-								<TableCell>
-									<Link to={row.link}>View Details</Link>
-								</TableCell>
-							</TableRow>
-						))}
+						{data
+							? data.map((row) => (
+									<TableRow
+										key={row.id}
+										sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+										<TableCell component="th" scope="row">
+											{row.first_name}
+										</TableCell>
+										<TableCell>{row.last_name}</TableCell>
+										<TableCell>{row.email}</TableCell>
+										<TableCell>{row.created_at}</TableCell>
+										<TableCell>
+											<Link to={row.link}>View Details</Link>
+										</TableCell>
+									</TableRow>
+							  ))
+							: null}
 					</TableBody>
 				</Table>
 			</TableContainer>
@@ -129,15 +133,26 @@ const AdminList = () => {
 							<Grid item xs={12} sm={6}>
 								<TextField
 									autoComplete="given-name"
-									name="name"
+									name="fname"
 									required
 									fullWidth
-									id="name"
-									label="Employee Name"
+									id="fisrt_name"
+									label="Employee First Name"
 									autoFocus
 								/>
 							</Grid>
 							<Grid item xs={12} sm={6}>
+								<TextField
+									autoComplete="given-name"
+									name="lname"
+									required
+									fullWidth
+									id="last_name"
+									label="Employee Last Name"
+									autoFocus
+								/>
+							</Grid>
+							<Grid item xs={12}>
 								<TextField
 									required
 									fullWidth
@@ -164,10 +179,11 @@ const AdminList = () => {
 										labelId="zone-select-label"
 										id="zone-select"
 										label="Age">
-										<MenuItem value={"south"}>South</MenuItem>
-										<MenuItem value={"east"}>East</MenuItem>
-										<MenuItem value={"west"}>West</MenuItem>
-										<MenuItem value={"north"}>North</MenuItem>
+										{zoneDataResp?.data
+											? zoneDataResp.data.map((v) => (
+													<MenuItem value={v.zone_id}>{v.zone_name}</MenuItem>
+											  ))
+											: null}
 									</Select>
 								</FormControl>
 							</Grid>

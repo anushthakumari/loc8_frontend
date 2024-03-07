@@ -4,7 +4,7 @@ import * as loginUtils from "../utils/login.utils";
 export async function getAdminsAPI() {
 	const token = loginUtils.getUser().token;
 
-	const { data } = await axios.get("admins", {
+	const { data } = await axios.get("admin/admins", {
 		headers: {
 			Authorization: token,
 		},
