@@ -1,4 +1,6 @@
 import React, { useCallback, useState } from "react";
+import useSWR from "swr";
+
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -15,22 +17,16 @@ import Paper from "@mui/material/Paper";
 import { useDropzone } from "react-dropzone";
 
 import SuperAdminLayout from "../../layouts/SuperAdminLayout";
+import {
+	getCitiesAPI,
+	getZonesAPI,
+	getStatesAPI,
+} from "../../apis/location.apis";
+import { addVideosAPI } from "../../apis/videos.apis";
 
-const zoneOptions = [
-	{ value: "north", label: "North" },
-	{ value: "east", label: "East" },
-	{ value: "west", label: "West" },
-	{ value: "south", label: "South" },
-];
+const defaultStateOptions = [{ value: 0, label: "Please Select Zone" }];
 
-const stateOptions = [
-	{ value: "Alabama", label: "Alabama" },
-	{ value: "Alaska", label: "Alaska" },
-	{ value: "Arizona", label: "Arizona" },
-	{ value: "California", label: "California" },
-];
-
-const cityOptions = [{ value: "Alabama", label: "Alabama" }];
+const defaultCityOptions = [{ value: 0, label: "Please Select State" }];
 
 function createData(videoId, filename, state, zone, city) {
 	return { videoId, filename, state, zone, city };
@@ -40,24 +36,102 @@ const rows = [createData("12", "gh78hk7", "Alabama", "South", "Montgomery")];
 
 export default function AddVideo() {
 	const [isResultOpen, setisResultOpen] = useState(false);
+	const [isUploading, setisUploading] = useState(false);
+	const [selectedData, setselectedData] = useState({
+		zone_id: null,
+		state_id: null,
+		city_id: null,
+		file: null,
+	});
+
+	const citiesDataResp = useSWR(
+		selectedData.state_id
+			? "/location/cities?state_id=" + selectedData.state_id
+			: null,
+		getCitiesAPI.bind(this, selectedData.state_id)
+	);
+
+	const zoneDataResp = useSWR("/location/zones", getZonesAPI);
+
+	const statesDataResp = useSWR(
+		selectedData.zone_id
+			? "/location/states?zone_id=" + selectedData.zone_id
+			: null,
+		getStatesAPI.bind(this, selectedData.zone_id)
+	);
 
 	const onDrop = useCallback((acceptedFiles) => {
-		// Do something with the files
+		const file = acceptedFiles[0];
+
+		if (!file) {
+			return;
+		}
+
+		setselectedData((prev) => ({ ...prev, file }));
 	}, []);
+
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop,
+		maxFiles: 1,
 		accept: {
 			"video/*": [".mp4"],
 		},
 	});
 
+	const handleSelectChange = (key = "", d = {}) => {
+		setselectedData((prev) => ({ ...prev, [key]: d[key] }));
+	};
+
+	const zoneOptions = zoneDataResp.data
+		? zoneDataResp.data.map((v) => ({
+				...v,
+				label: v.zone_name,
+				value: v.zone_id,
+		  }))
+		: [];
+
+	const stateOptions = statesDataResp.data
+		? statesDataResp.data.map((v) => ({
+				...v,
+				label: v.state_name,
+				value: v.state_id,
+		  }))
+		: defaultStateOptions;
+
+	const cityOptions = citiesDataResp.data
+		? citiesDataResp.data.map((v) => ({
+				...v,
+				label: v.city_name,
+				value: v.city_id,
+		  }))
+		: defaultCityOptions;
+
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
-		console.log({
-			email: data.get("email"),
-			password: data.get("password"),
-		});
+
+		if (!selectedData.file) {
+			alert("Please select a video file.");
+			return;
+		}
+
+		data.append("video", selectedData.file);
+		data.append("zone_id", selectedData.zone_id);
+		data.append("state_id", selectedData.state_id);
+		data.append("city_id", selectedData.city_id);
+
+		setisUploading(true);
+
+		addVideosAPI(data)
+			.then((v) => {
+				alert("video uploaded successfully!");
+			})
+			.catch((v) => {
+				alert("Something went wrong!");
+			})
+			.finally(() => {
+				setisUploading(false);
+			});
 	};
 
 	return (
@@ -114,20 +188,34 @@ export default function AddVideo() {
 						<Typography component="h1" variant="h5">
 							Add Video
 						</Typography>
-						<Box
-							component="form"
-							noValidate
-							onSubmit={handleSubmit}
-							sx={{ mt: 3 }}>
+						<Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
 							<Grid container spacing={2}>
 								<Grid item xs={12}>
-									<RSelect placeholder="Select Zone" options={zoneOptions} />
+									<RSelect
+										isLoading={zoneDataResp.isLoading}
+										placeholder="Select Zone"
+										options={zoneOptions}
+										onChange={handleSelectChange.bind(this, "zone_id")}
+										required
+									/>
 								</Grid>
 								<Grid item xs={12}>
-									<RSelect placeholder="Select State" options={stateOptions} />
+									<RSelect
+										isLoading={statesDataResp.isLoading}
+										placeholder="Select State"
+										options={stateOptions}
+										onChange={handleSelectChange.bind(this, "state_id")}
+										required
+									/>
 								</Grid>
 								<Grid item xs={12}>
-									<RSelect placeholder="Select City" options={cityOptions} />
+									<RSelect
+										isLoading={citiesDataResp.isLoading}
+										placeholder="Select City"
+										options={cityOptions}
+										onChange={handleSelectChange.bind(this, "city_id")}
+										required
+									/>
 								</Grid>
 								<Grid item xs={12}>
 									<div
@@ -142,8 +230,9 @@ export default function AddVideo() {
 											<p>Drop the files here ...</p>
 										) : (
 											<p>
-												Drag 'n' drop video file here, or click to select video
-												file
+												{selectedData.file
+													? "Selected File: " + selectedData.file.name
+													: " Drag 'n' drop video file here, or click to select video file"}
 											</p>
 										)}
 									</div>
@@ -153,7 +242,7 @@ export default function AddVideo() {
 								type="submit"
 								fullWidth
 								variant="contained"
-								onClick={() => setisResultOpen(true)}
+								disabled={isUploading}
 								sx={{ mt: 3, mb: 2 }}>
 								Add
 							</Button>

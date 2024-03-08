@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import useSWR from "swr";
 
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -22,106 +23,154 @@ import TextField from "@mui/material/TextField";
 
 import AddIcon from "@mui/icons-material/Add";
 
+import {
+  addCitiesAPI,
+  getCitiesAPI,
+  getStatesAPI,
+} from "../../apis/location.apis";
+
 const City = () => {
-	const [isFormOpen, setisFormOpen] = useState(false);
+  const [isFormOpen, setisFormOpen] = useState(false);
+  const citiesDataResp = useSWR("/location/cities", getCitiesAPI);
 
-	const handleFormClose = () => {
-		setisFormOpen(false);
-	};
+  const handleFormClose = () => {
+    setisFormOpen(false);
+  };
 
-	const openForm = () => {
-		setisFormOpen(true);
-	};
+  const openForm = () => {
+    setisFormOpen(true);
+  };
 
-	return (
-		<Box>
-			<Button
-				sx={{ mb: 2 }}
-				onClick={openForm}
-				variant="contained"
-				startIcon={<AddIcon />}>
-				Add City
-			</Button>
-			<TableContainer component={Paper}>
-				<Table aria-label="simple table">
-					<TableHead>
-						<TableRow>
-							<TableCell>City</TableCell>
-							<TableCell align="right">State</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{rows.map((row) => (
-							<TableRow
-								key={row.city}
-								sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-								<TableCell>{row.city}</TableCell>
-								<TableCell align="right" component="th" scope="row">
-									{row.state}
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</TableContainer>
-			<AddStateForm open={isFormOpen} onClose={handleFormClose} />
-		</Box>
-	);
+  return (
+    <Box>
+      <Button
+        sx={{ mb: 2 }}
+        onClick={openForm}
+        variant="contained"
+        startIcon={<AddIcon />}
+      >
+        Add City
+      </Button>
+      <TableContainer component={Paper}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>City</TableCell>
+              <TableCell align="right">State</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {citiesDataResp.data?.map((row) => (
+              <TableRow
+                key={row.city_id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell
+                  sx={{
+                    textTransform: "capitalize",
+                  }}
+                >
+                  {row.city_name}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    textTransform: "capitalize",
+                  }}
+                  align="right"
+                  component="th"
+                  scope="row"
+                >
+                  {row.state_name}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <AddCityForm open={isFormOpen} onClose={handleFormClose} />
+    </Box>
+  );
 };
 
 export default City;
 
-function createData(state, city) {
-	return { state, city };
-}
+function AddCityForm({ onClose, open }) {
+  const statesDataResp = useSWR("/location/states", getStatesAPI);
+  const [isLoaing, setisLoaing] = useState(false);
 
-const rows = [
-	createData("Alabama", "Montgomery"),
-	createData("Alabama", "Huntsville"),
-	createData("Alabama", "Birmingham"),
-	createData("Alabama", "Mobile"),
-	createData("Alabama", "Tuscaloosa"),
-];
+  const handleClose = () => {
+    onClose();
+  };
 
-function AddStateForm({ onClose, open }) {
-	const handleClose = () => {
-		onClose();
-	};
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
 
-	return (
-		<React.Fragment>
-			<Dialog
-				open={open}
-				onClose={handleClose}
-				aria-labelledby="add-city-title"
-				aria-describedby="add-city-description">
-				<DialogTitle id="add-city-title">{"Add A City"}</DialogTitle>
-				<DialogContent>
-					<DialogContentText mb={2} id="add-city-description">
-						Fill the form to add a city.
-					</DialogContentText>
+    setisLoaing(true);
+    addCitiesAPI(data.get("city_name"), data.get("state_id"))
+      .then((res) => {
+        alert("City Added!");
+        handleClose();
+      })
+      .catch((e) => {
+        if (e.respponse && e.respponse?.data?.message) {
+          alert(e.respponse?.data?.message);
+        } else {
+          alert("something went wrong!");
+        }
+      })
+      .finally((v) => {
+        setisLoaing(false);
+      });
+  };
 
-					<FormControl sx={{ mb: 2 }} size="small" fullWidth>
-						<InputLabel id="zone-select-label">Select State</InputLabel>
-						<Select labelId="zone-select-label" id="zone-select" label="Age">
-							<MenuItem value={"Alabama"}>Alabama</MenuItem>
-						</Select>
-					</FormControl>
+  return (
+    <React.Fragment>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="add-city-title"
+        aria-describedby="add-city-description"
+      >
+        <form onSubmit={handleSubmit} method="post">
+          <DialogTitle id="add-city-title">{"Add A City"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText mb={2} id="add-city-description">
+              Fill the form to add a city.
+            </DialogContentText>
 
-					<TextField
-						size="small"
-						label="Enter City Name"
-						variant="outlined"
-						fullWidth
-					/>
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
-					<Button variant="contained" onClick={handleClose} autoFocus>
-						Save
-					</Button>
-				</DialogActions>
-			</Dialog>
-		</React.Fragment>
-	);
+            <FormControl sx={{ mb: 2 }} size="small" fullWidth required>
+              <InputLabel id="zone-select-label">Select State</InputLabel>
+              <Select
+                name="state_id"
+                labelId="zone-select-label"
+                id="zone-select"
+              >
+                {statesDataResp?.data
+                  ? statesDataResp.data.map((v) => (
+                      <MenuItem value={v.state_id}>{v.state_name}</MenuItem>
+                    ))
+                  : null}
+              </Select>
+            </FormControl>
+
+            <TextField
+              size="small"
+              label="Enter City Name"
+              variant="outlined"
+              name="city_name"
+              required
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button disabled={isLoaing} variant="contained" type="submit">
+              Save
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </React.Fragment>
+  );
 }

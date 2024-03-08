@@ -23,144 +23,154 @@ import TextField from "@mui/material/TextField";
 
 import AddIcon from "@mui/icons-material/Add";
 
-import { getZonesAPI, addStatesAPI } from "../../apis/location.apis";
+import {
+  getZonesAPI,
+  addStatesAPI,
+  getStatesAPI,
+} from "../../apis/location.apis";
 
 const States = () => {
-	const [isFormOpen, setisFormOpen] = useState(false);
+  const [isFormOpen, setisFormOpen] = useState(false);
+  const statesDataResp = useSWR("/location/states", getStatesAPI);
 
-	const handleFormClose = () => {
-		setisFormOpen(false);
-	};
+  const handleFormClose = () => {
+    setisFormOpen(false);
+  };
 
-	const openForm = () => {
-		setisFormOpen(true);
-	};
+  const openForm = () => {
+    setisFormOpen(true);
+  };
 
-	return (
-		<Box>
-			<Button
-				sx={{ mb: 2 }}
-				onClick={openForm}
-				variant="contained"
-				startIcon={<AddIcon />}>
-				Add State
-			</Button>
-			<TableContainer component={Paper}>
-				<Table aria-label="simple table">
-					<TableHead>
-						<TableRow>
-							<TableCell>States</TableCell>
-							<TableCell align="right">Zones</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{rows.map((row) => (
-							<TableRow
-								key={row.state}
-								sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-								<TableCell component="th" scope="row">
-									{row.state}
-								</TableCell>
-								<TableCell align="right">{row.zone}</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</TableContainer>
-			<AddStateForm open={isFormOpen} onClose={handleFormClose} />
-		</Box>
-	);
+  return (
+    <Box>
+      <Button
+        sx={{ mb: 2 }}
+        onClick={openForm}
+        variant="contained"
+        startIcon={<AddIcon />}
+      >
+        Add State
+      </Button>
+      <TableContainer component={Paper}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>States</TableCell>
+              <TableCell align="right">Zones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {statesDataResp.data?.map((row) => (
+              <TableRow
+                key={row.state_id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell
+                  sx={{
+                    textTransform: "capitalize",
+                  }}
+                  component="th"
+                  scope="row"
+                >
+                  {row.state_name}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    textTransform: "capitalize",
+                  }}
+                  align="right"
+                >
+                  {row.zone_name}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <AddStateForm open={isFormOpen} onClose={handleFormClose} />
+    </Box>
+  );
 };
 
 export default States;
 
-function createData(state, zone) {
-	return { state, zone };
-}
-
-const rows = [
-	createData("Alabama", "South"),
-	createData("Alaska", "West"),
-	createData("Arizona", "South"),
-	createData("California", "West"),
-	createData("Montana", "West"),
-];
-
 function AddStateForm({ onClose, open }) {
-	const zoneDataResp = useSWR("/location/zones", getZonesAPI);
-	const [isLoaing, setisLoaing] = useState(false);
+  const zoneDataResp = useSWR("/location/zones", getZonesAPI);
+  const [isLoaing, setisLoaing] = useState(false);
 
-	const handleClose = () => {
-		onClose();
-	};
+  const handleClose = () => {
+    onClose();
+  };
 
-	const handleSubmit = (event) => {
-		event.preventDefault();
-		const data = new FormData(event.currentTarget);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
 
-		setisLoaing(true);
-		addStatesAPI(data.get("state_name"), data.get("zone_id"))
-			.then((res) => {
-				alert("State Added!");
-				handleClose();
-			})
-			.catch((e) => {
-				if (e.respponse && e.respponse?.data?.message) {
-					alert(e.respponse?.data?.message);
-				} else {
-					alert("something went wrong!");
-				}
-			})
-			.finally((v) => {
-				setisLoaing(false);
-			});
-	};
+    setisLoaing(true);
+    addStatesAPI(data.get("state_name"), data.get("zone_id"))
+      .then((res) => {
+        alert("State Added!");
+        handleClose();
+      })
+      .catch((e) => {
+        if (e.respponse && e.respponse?.data?.message) {
+          alert(e.respponse?.data?.message);
+        } else {
+          alert("something went wrong!");
+        }
+      })
+      .finally((v) => {
+        setisLoaing(false);
+      });
+  };
 
-	return (
-		<React.Fragment>
-			<Dialog
-				open={open}
-				onClose={handleClose}
-				aria-labelledby="add-state-title"
-				aria-describedby="add-state-description">
-				<form onSubmit={handleSubmit} method="post">
-					<DialogTitle id="add-state-title">{"Add A State"}</DialogTitle>
-					<DialogContent>
-						<DialogContentText mb={2} id="add-state-description">
-							Fill the form to add a state.
-						</DialogContentText>
+  return (
+    <React.Fragment>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="add-state-title"
+        aria-describedby="add-state-description"
+      >
+        <form onSubmit={handleSubmit} method="post">
+          <DialogTitle id="add-state-title">{"Add A State"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText mb={2} id="add-state-description">
+              Fill the form to add a state.
+            </DialogContentText>
 
-						<FormControl sx={{ mb: 2 }} size="small" fullWidth>
-							<InputLabel id="zone-select-label">Select Zone</InputLabel>
-							<Select
-								name="zone_id"
-								labelId="zone-select-label"
-								id="zone-select"
-								label="Age">
-								{zoneDataResp?.data
-									? zoneDataResp.data.map((v) => (
-											<MenuItem value={v.zone_id}>{v.zone_name}</MenuItem>
-									  ))
-									: null}
-							</Select>
-						</FormControl>
+            <FormControl sx={{ mb: 2 }} size="small" fullWidth required>
+              <InputLabel id="zone-select-label">Select Zone</InputLabel>
+              <Select
+                name="zone_id"
+                labelId="zone-select-label"
+                id="zone-select"
+              >
+                {zoneDataResp?.data
+                  ? zoneDataResp.data.map((v) => (
+                      <MenuItem value={v.zone_id}>{v.zone_name}</MenuItem>
+                    ))
+                  : null}
+              </Select>
+            </FormControl>
 
-						<TextField
-							size="small"
-							name="state_name"
-							label="Enter State Name"
-							variant="outlined"
-							fullWidth
-						/>
-					</DialogContent>
-					<DialogActions>
-						<Button onClick={handleClose}>Cancel</Button>
-						<Button disabled={isLoaing} variant="contained" type="submit">
-							Save
-						</Button>
-					</DialogActions>
-				</form>
-			</Dialog>
-		</React.Fragment>
-	);
+            <TextField
+              size="small"
+              name="state_name"
+              label="Enter State Name"
+              variant="outlined"
+              fullWidth
+              required
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button disabled={isLoaing} variant="contained" type="submit">
+              Save
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </React.Fragment>
+  );
 }
