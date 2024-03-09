@@ -111,6 +111,11 @@ function BillboardTable({ data, onMerge }) {
 		setSelectedBills((prev) => [...prev, id]);
 	};
 
+	const handleSelectAll = (e) => {
+		const isChecked = e.target.checked;
+		setSelectedBills(isChecked ? data.map((v) => v.id) : []);
+	};
+
 	const handleMerge = () => {
 		setisLoading(true);
 		mergeBillboardsAPI(selectedBills)
@@ -142,7 +147,13 @@ function BillboardTable({ data, onMerge }) {
 			<Table size="small">
 				<TableHead>
 					<TableRow>
-						<TableCell></TableCell>
+						<TableCell>
+							<Checkbox
+								size="small"
+								onChange={handleSelectAll}
+								checked={selectedBills.length === data.length}
+							/>
+						</TableCell>
 						<TableCell>Billboard ID</TableCell>
 						<TableCell align="right">Tracker ID</TableCell>
 						<TableCell align="right">Average Areas</TableCell>
@@ -156,7 +167,10 @@ function BillboardTable({ data, onMerge }) {
 					{data.map((row) => (
 						<TableRow
 							key={row.id}
-							sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+							sx={{
+								"&:last-child td, &:last-child th": { border: 0 },
+								backgroundColor: isChecked(row.id) ? "#fff59d" : "",
+							}}>
 							<TableCell>
 								<Checkbox
 									size="small"

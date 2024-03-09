@@ -40,10 +40,21 @@ export async function getProcessedOutputAPI(video_id) {
 		{
 			headers: {
 				Authorization: token,
-				"Content-Type": "application/form-data",
 			},
 		}
 	);
+
+	return data;
+}
+
+export async function getVidoesAPI() {
+	const token = loginUtils.getUser().token;
+
+	const { data } = await axios.get("videos/", {
+		headers: {
+			Authorization: token,
+		},
+	});
 
 	return data;
 }
