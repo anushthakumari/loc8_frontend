@@ -82,7 +82,7 @@ function VideoFileDetails({ data }) {
 						<TableCell component="th" scope="row">
 							{data.video_id}
 						</TableCell>
-						<TableCell align="right">{data.video_path}</TableCell>
+						<TableCell align="right">{data.filename}</TableCell>
 						<TableCell align="right">{data.zone_name}</TableCell>
 						<TableCell align="right">{data.state_name}</TableCell>
 						<TableCell align="right">{data.city_name}</TableCell>
