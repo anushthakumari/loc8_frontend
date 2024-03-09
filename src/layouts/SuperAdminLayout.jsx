@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
@@ -119,7 +119,6 @@ export default function SuperAdminLayout({ children, activeLink }) {
 	const activeNav = navs.find((v) => v.link === activeLink);
 
 	const { saveUser } = useAuthState();
-	const navigate = useNavigate();
 	const [open, setOpen] = React.useState(true);
 
 	const toggleDrawer = () => {
@@ -128,9 +127,7 @@ export default function SuperAdminLayout({ children, activeLink }) {
 
 	const handleLogout = () => {
 		saveUser(null);
-		setTimeout(() => {
-			navigate("/");
-		}, 1000);
+		window.location.href = "/";
 	};
 
 	return (

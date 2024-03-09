@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import useSWR from "swr";
+import { useNavigate } from "react-router-dom";
 
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -23,6 +24,8 @@ import {
 	getStatesAPI,
 } from "../../apis/location.apis";
 import { addVideosAPI } from "../../apis/videos.apis";
+import { toast } from "react-toastify";
+import Loader from "../../components/Loader";
 
 const defaultStateOptions = [{ value: 0, label: "Please Select Zone" }];
 
@@ -59,6 +62,8 @@ export default function AddVideo() {
 			: null,
 		getStatesAPI.bind(this, selectedData.zone_id)
 	);
+
+	const navigate = useNavigate();
 
 	const onDrop = useCallback((acceptedFiles) => {
 		const file = acceptedFiles[0];
@@ -123,11 +128,15 @@ export default function AddVideo() {
 		setisUploading(true);
 
 		addVideosAPI(data)
-			.then((v) => {
-				alert("video uploaded successfully!");
+			.then((resp) => {
+				const video_id = resp.video_details.video_id;
+
+				toast.success("video uploaded successfully!");
+				navigate("/add-video/" + video_id + "/processed-output");
 			})
 			.catch((v) => {
-				alert("Something went wrong!");
+				console.log(v);
+				toast.error("Something went wrong!");
 			})
 			.finally(() => {
 				setisUploading(false);
@@ -136,120 +145,79 @@ export default function AddVideo() {
 
 	return (
 		<SuperAdminLayout activeLink="/add-video">
-			{isResultOpen ? (
-				<Container component="div" maxWidth="md">
-					<Box>
-						<Typography variant="h5">Processed Result</Typography>
-						<TableContainer component={Paper}>
-							<Table aria-label="simple table">
-								<TableHead>
-									<TableRow>
-										<TableCell>Video Id</TableCell>
-										<TableCell>Filename</TableCell>
-										<TableCell align="right">Zone</TableCell>
-										<TableCell align="right">State</TableCell>
-										<TableCell align="right">City</TableCell>
-										<TableCell align="right">Delete</TableCell>
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{rows.map((row) => (
-										<TableRow
-											key={row.videoId}
-											sx={{
-												"&:last-child td, &:last-child th": { border: 0 },
-											}}>
-											<TableCell component="th" scope="row">
-												{row.videoId}
-											</TableCell>
-											<TableCell>{row.filename}</TableCell>
-											<TableCell align="right">{row.zone}</TableCell>
-											<TableCell align="right">{row.state}</TableCell>
-											<TableCell align="right">{row.city}</TableCell>
-											<TableCell align="right">
-												<Button>Delete</Button>
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						</TableContainer>
-					</Box>
-				</Container>
-			) : (
-				<Container component="main" maxWidth="xs">
-					<Box
-						sx={{
-							marginTop: 8,
-							display: "flex",
-							flexDirection: "column",
-							alignItems: "center",
-						}}>
-						<Typography component="h1" variant="h5">
-							Add Video
-						</Typography>
-						<Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-							<Grid container spacing={2}>
-								<Grid item xs={12}>
-									<RSelect
-										isLoading={zoneDataResp.isLoading}
-										placeholder="Select Zone"
-										options={zoneOptions}
-										onChange={handleSelectChange.bind(this, "zone_id")}
-										required
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<RSelect
-										isLoading={statesDataResp.isLoading}
-										placeholder="Select State"
-										options={stateOptions}
-										onChange={handleSelectChange.bind(this, "state_id")}
-										required
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<RSelect
-										isLoading={citiesDataResp.isLoading}
-										placeholder="Select City"
-										options={cityOptions}
-										onChange={handleSelectChange.bind(this, "city_id")}
-										required
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<div
-										style={{
-											border: "1px dashed #333",
-											padding: "20px",
-											borderRadius: "15px",
-										}}
-										{...getRootProps()}>
-										<input {...getInputProps()} />
-										{isDragActive ? (
-											<p>Drop the files here ...</p>
-										) : (
-											<p>
-												{selectedData.file
-													? "Selected File: " + selectedData.file.name
-													: " Drag 'n' drop video file here, or click to select video file"}
-											</p>
-										)}
-									</div>
-								</Grid>
+			<Container component="main" maxWidth="xs">
+				<Box
+					sx={{
+						marginTop: 8,
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+					}}>
+					<Typography component="h1" variant="h5">
+						Add Video
+					</Typography>
+					<Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+						<Grid container spacing={2}>
+							<Grid item xs={12}>
+								<RSelect
+									isLoading={zoneDataResp.isLoading}
+									placeholder="Select Zone"
+									options={zoneOptions}
+									onChange={handleSelectChange.bind(this, "zone_id")}
+									required
+								/>
 							</Grid>
-							<Button
-								type="submit"
-								fullWidth
-								variant="contained"
-								disabled={isUploading}
-								sx={{ mt: 3, mb: 2 }}>
-								Add
-							</Button>
-						</Box>
+							<Grid item xs={12}>
+								<RSelect
+									isLoading={statesDataResp.isLoading}
+									placeholder="Select State"
+									options={stateOptions}
+									onChange={handleSelectChange.bind(this, "state_id")}
+									required
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<RSelect
+									isLoading={citiesDataResp.isLoading}
+									placeholder="Select City"
+									options={cityOptions}
+									onChange={handleSelectChange.bind(this, "city_id")}
+									required
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<div
+									style={{
+										border: "1px dashed #333",
+										padding: "20px",
+										borderRadius: "15px",
+									}}
+									{...getRootProps()}>
+									<input {...getInputProps()} />
+									{isDragActive ? (
+										<p>Drop the files here ...</p>
+									) : (
+										<p>
+											{selectedData.file
+												? "Selected File: " + selectedData.file.name
+												: " Drag 'n' drop video file here, or click to select video file"}
+										</p>
+									)}
+								</div>
+							</Grid>
+						</Grid>
+						<Button
+							type="submit"
+							fullWidth
+							variant="contained"
+							disabled={isUploading}
+							sx={{ mt: 3, mb: 2 }}>
+							Add
+						</Button>
 					</Box>
-				</Container>
-			)}
+				</Box>
+				<Loader open={isUploading} />
+			</Container>
 		</SuperAdminLayout>
 	);
 }
