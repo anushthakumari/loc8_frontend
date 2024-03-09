@@ -1,15 +1,14 @@
 import * as React from "react";
 import { RouterProvider } from "react-router-dom";
 
-import {
-	authRouter,
-	superAdminRouter,
-	adminRouter,
-	plannerRouter,
-} from "./routes";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Link from "@mui/material/Link";
+
+import { authRouter, superAdminRouter } from "./routes";
 
 import useAuth from "./hooks/useAuth";
-import roles from "./constants/roles";
 
 export default function App() {
 	const user = useAuth();
@@ -18,15 +17,5 @@ export default function App() {
 		return <RouterProvider router={authRouter} />;
 	}
 
-	switch (user.role_id) {
-		case roles.SUPERADMIN:
-			return <RouterProvider router={superAdminRouter} />;
-		case roles.ADMIN:
-			return <RouterProvider router={adminRouter} />;
-		case roles.PLANNER:
-			return <RouterProvider router={plannerRouter} />;
-
-		default:
-			<RouterProvider router={superAdminRouter} />;
-	}
+	return <RouterProvider router={superAdminRouter} />;
 }

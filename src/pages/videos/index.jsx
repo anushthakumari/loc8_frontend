@@ -23,6 +23,7 @@ const zoneOptions = [
 	{ value: "east", label: "East" },
 	{ value: "west", label: "West" },
 	{ value: "south", label: "South" },
+	{value: "north-east", label: "North East"}
 ];
 
 const stateOptions = [
@@ -39,9 +40,9 @@ const Videos = () => {
 		<SuperAdminLayout activeLink="/videos">
 			<Container component="div" maxWidth="xl">
 				<Box>
-					<Typography variant="h4" mb={2}>
+					{/* <Typography variant="h4" mb={2}>
 						Uploaded Videos
-					</Typography>
+					</Typography> */}
 					<TableContainer
 						component={Paper}
 						sx={{
