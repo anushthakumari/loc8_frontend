@@ -115,7 +115,11 @@ const Drawer = styled(MuiDrawer, {
 	},
 }));
 
-export default function SuperAdminLayout({ children, activeLink }) {
+export default function SuperAdminLayout({
+	children,
+	activeLink,
+	containerComponent = "container",
+}) {
 	const activeNav = navs.find((v) => v.link === activeLink);
 
 	const { saveUser } = useAuthState();
@@ -129,6 +133,8 @@ export default function SuperAdminLayout({ children, activeLink }) {
 		saveUser(null);
 		window.location.href = "/";
 	};
+
+	const ContainerComp = containerComponent === "container" ? Container : Box;
 
 	return (
 		<Box sx={{ display: "flex" }}>
@@ -225,10 +231,10 @@ export default function SuperAdminLayout({ children, activeLink }) {
 					overflow: "auto",
 				}}>
 				<Toolbar />
-				<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+				<ContainerComp sx={{ mt: 4, mb: 4 }}>
 					<Box>{children}</Box>
 					<Copyright sx={{ pt: 4 }} />
-				</Container>
+				</ContainerComp>
 			</Box>
 		</Box>
 	);

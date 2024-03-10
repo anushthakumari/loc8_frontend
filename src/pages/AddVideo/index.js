@@ -8,13 +8,6 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import RSelect from "react-select";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 import { useDropzone } from "react-dropzone";
 
 import SuperAdminLayout from "../../layouts/SuperAdminLayout";
@@ -31,14 +24,7 @@ const defaultStateOptions = [{ value: 0, label: "Please Select Zone" }];
 
 const defaultCityOptions = [{ value: 0, label: "Please Select State" }];
 
-function createData(videoId, filename, state, zone, city) {
-	return { videoId, filename, state, zone, city };
-}
-
-const rows = [createData("12", "gh78hk7", "Alabama", "South", "Montgomery")];
-
 export default function AddVideo() {
-	const [isResultOpen, setisResultOpen] = useState(false);
 	const [isUploading, setisUploading] = useState(false);
 	const [selectedData, setselectedData] = useState({
 		zone_id: null,
