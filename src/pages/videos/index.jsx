@@ -51,6 +51,7 @@ import { getVidoesAPI } from "../../apis/videos.apis";
 import { Stack, TextField } from "@mui/material";
 import ModalContainer from "../../components/ModalContainer";
 import ASearchFilter from "./ASearchFilter";
+import base_url from "../../constants/base_url";
 
 const columnHelper = createColumnHelper();
 
@@ -68,6 +69,17 @@ const columns = [
 		enableColumnFilter: false,
 	}),
 	columnHelper.accessor("filename", {
+		cell: (info) => {
+			const filename = info.getValue();
+
+			const fileurl = base_url + "videos/uploads/" + filename?.split(".")[0];
+
+			return (
+				<a href={fileurl} target="_blank" rel="noreferrer">
+					{filename}
+				</a>
+			);
+		},
 		header: "Video File name",
 		enableColumnFilter: false,
 	}),

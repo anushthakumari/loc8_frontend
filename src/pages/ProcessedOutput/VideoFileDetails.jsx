@@ -7,8 +7,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import base_url from "../../constants/base_url";
 
 export default function VideoFileDetails({ data }) {
+	const fileurl = base_url + "videos/uploads/" + data?.filename?.split(".")[0];
+
 	return (
 		<TableContainer component={Paper}>
 			<Table size="small">
@@ -28,7 +31,11 @@ export default function VideoFileDetails({ data }) {
 						<TableCell component="th" scope="row">
 							{data.video_id}
 						</TableCell>
-						<TableCell align="right">{data.filename}</TableCell>
+						<TableCell align="right">
+							<a href={fileurl} target="_blank" rel="noreferrer">
+								{data.filename}
+							</a>
+						</TableCell>
 						<TableCell align="right">{data.zone_name}</TableCell>
 						<TableCell align="right">{data.state_name}</TableCell>
 						<TableCell align="right">{data.city_name}</TableCell>
