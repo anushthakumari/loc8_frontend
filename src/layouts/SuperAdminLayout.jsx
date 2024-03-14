@@ -30,6 +30,7 @@ import { Button, Stack } from "@mui/material";
 import Copyright from "../components/Copyright";
 
 import { useAuthState } from "../contexts/AuthProvider";
+import roles from "../constants/roles";
 
 const drawerWidth = 240;
 
@@ -38,11 +39,15 @@ const navs = [
 		title: "Admins",
 		link: "/admins",
 		Icon: GroupIcon,
+		isSuperAdmin: true,
+		isAdmin: false,
 	},
 	{
 		title: "Marketting",
 		link: "/",
 		Icon: GroupIcon,
+		isSuperAdmin: true,
+		isAdmin: false,
 	},
 	// {
 	// 	title: "Add Admin",
@@ -53,6 +58,8 @@ const navs = [
 		title: "Planners",
 		link: "/planners",
 		Icon: PermContactCalendarIcon,
+		isSuperAdmin: true,
+		isAdmin: false,
 	},
 	// {
 	// 	title: "Add Planner",
@@ -63,11 +70,15 @@ const navs = [
 		title: "videos",
 		link: "/videos",
 		Icon: OndemandVideoIcon,
+		isSuperAdmin: true,
+		isAdmin: true,
 	},
 	{
 		title: "Add Video",
 		link: "/add-video",
 		Icon: VideoCallIcon,
+		isSuperAdmin: true,
+		isAdmin: true,
 	},
 ];
 
@@ -120,7 +131,21 @@ export default function SuperAdminLayout({
 	activeLink,
 	containerComponent = "container",
 }) {
-	const activeNav = navs.find((v) => v.link === activeLink);
+	const { user: userData } = useAuthState();
+
+	let roleNavs = [];
+
+	if (userData.role_id === roles.SUPERADMIN) {
+		roleNavs = navs.filter((v) => v.isSuperAdmin);
+	}
+
+	if (userData.role_id === roles.ADMIN) {
+		roleNavs = navs.filter((v) => v.isAdmin);
+	}
+
+	console.log(userData, roleNavs);
+
+	const activeNav = roleNavs.find((v) => v.link === activeLink);
 
 	const { saveUser } = useAuthState();
 	const [open, setOpen] = React.useState(true);
@@ -190,7 +215,7 @@ export default function SuperAdminLayout({
 				</Toolbar>
 				<Divider />
 				<List component="nav">
-					{navs.map((v) => (
+					{roleNavs.map((v) => (
 						<ListItemButton
 							LinkComponent={Link}
 							sx={

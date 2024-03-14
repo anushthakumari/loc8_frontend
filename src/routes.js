@@ -54,8 +54,20 @@ export const superAdminRouter = createBrowserRouter([
 
 export const adminRouter = createBrowserRouter([
 	{
+		path: "/add-video",
+		element: <AddVideo />,
+	},
+	{
+		path: "/add-video/:video_id/processed-output",
+		element: <ProcessedOutput />,
+	},
+	{
 		path: "/",
-		element: <Test />,
+		element: <Videos />,
+	},
+	{
+		path: "/videos",
+		element: <Videos />,
 	},
 ]);
 
