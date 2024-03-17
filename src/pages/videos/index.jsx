@@ -263,15 +263,47 @@ const Videos = () => {
 							justifyContent={"space-between"}
 							direction={"row"}>
 							<Stack direction={"row"} alignItems={"center"} gap={2}>
-								<Button
-									variant="contained"
-									size="small"
-									startIcon={<FilterAltIcon />}
-									disableElevation
-									onClick={openFilter}
-									sx={{ borderRadius: "15px" }}>
-									Filters
-								</Button>
+								<ClickAwayListener onClickAway={handleFilterClose}>
+									<div>
+										<StyledTooltip
+											PopperProps={{
+												disablePortal: true,
+											}}
+											placement="left-start"
+											onClose={handleFilterClose}
+											open={filterOpen}
+											disableFocusListener
+											disableHoverListener
+											disableTouchListener
+											title={
+												<Stack
+													m={2}
+													maxWidth={"450px"}
+													direction={"row"}
+													flexWrap={"wrap"}
+													gap={2}>
+													{table
+														.getAllColumns()
+														.filter((c) => c.getCanFilter())
+														.map((c) => (
+															<Box key={c.id} flexBasis={"45%"}>
+																<ASearchFilter column={c} />
+															</Box>
+														))}
+												</Stack>
+											}>
+											<Button
+												variant="contained"
+												size="small"
+												startIcon={<FilterAltIcon />}
+												disableElevation
+												onClick={openFilter}
+												sx={{ borderRadius: "15px" }}>
+												Filters
+											</Button>
+										</StyledTooltip>
+									</div>
+								</ClickAwayListener>
 								<DebouncedInput
 									value={globalFilter ?? ""}
 									onChange={(value) => setGlobalFilter(String(value))}
@@ -469,23 +501,6 @@ const Videos = () => {
 					</TableContainer>
 				</Box>
 			</Container>
-			<ModalContainer open={filterOpen} onClose={handleFilterClose}>
-				<Stack
-					m={2}
-					maxWidth={"450px"}
-					direction={"row"}
-					flexWrap={"wrap"}
-					gap={2}>
-					{table
-						.getAllColumns()
-						.filter((c) => c.getCanFilter())
-						.map((c) => (
-							<Box key={c.id} flexBasis={"45%"}>
-								<ASearchFilter column={c} />
-							</Box>
-						))}
-				</Stack>
-			</ModalContainer>
 		</SuperAdminLayout>
 	);
 };

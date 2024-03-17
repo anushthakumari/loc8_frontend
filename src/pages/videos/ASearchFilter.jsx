@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import RSelect from "react-select";
 import DebouncedInput from "../../components/DebouncedInput";
 
 export default function ASearchFilter({ column }) {
