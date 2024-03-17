@@ -30,6 +30,7 @@ import { addUserAPI, getAdminsAPI, deleteUserAPI } from "../apis/admins.apis";
 import { getZonesAPI } from "../apis/location.apis";
 
 import { cleanString } from "../utils/helper.utils";
+import { toast } from "react-toastify";
 
 const AdminList = () => {
 	const [isFormOpen, setisFormOpen] = useState(false);
@@ -76,10 +77,10 @@ const AdminList = () => {
 				handleClose();
 			})
 			.catch((e) => {
-				if (e.respponse && e.respponse?.data?.message) {
-					alert(e.respponse?.data?.message);
+				if (e.response && e.response?.data?.message) {
+					toast.error(e.response?.data?.message);
 				} else {
-					alert("something went wrong!");
+					toast.error("something went wrong!");
 				}
 			})
 			.finally((v) => {
@@ -141,7 +142,7 @@ const AdminList = () => {
 							<TableCell>Last Name</TableCell>
 							<TableCell>Email</TableCell>
 							<TableCell>Zone</TableCell>
-							<TableCell>Creted At</TableCell>
+							<TableCell>Created At</TableCell>
 							<TableCell>Delete</TableCell>
 						</TableRow>
 					</TableHead>

@@ -25,11 +25,14 @@ import TextField from "@mui/material/TextField";
 import { Button, Stack, CircularProgress } from "@mui/material";
 
 import SuperAdminLayout from "../layouts/SuperAdminLayout";
+import useAuth from "../hooks/useAuth";
+import roles from "../constants/roles";
 
 import { addUserAPI, getPlannersAPI, deleteUserAPI } from "../apis/admins.apis";
 import { getZonesAPI } from "../apis/location.apis";
 
 import { cleanString } from "../utils/helper.utils";
+import { toast } from "react-toastify";
 
 const PlannerList = () => {
 	const [isFormOpen, setisFormOpen] = useState(false);
@@ -45,6 +48,10 @@ const PlannerList = () => {
 		isLoading: fetchingPlanners,
 	} = useSWR("/admins/planners", getPlannersAPI);
 	const zoneDataResp = useSWR("/location/zones", getZonesAPI);
+
+	const user = useAuth();
+
+	const isSuperAdmin = user.role_id === roles.SUPERADMIN;
 
 	const handleClose = () => {
 		setisFormOpen(false);
@@ -72,14 +79,14 @@ const PlannerList = () => {
 
 		addUserAPI(d)
 			.then((res) => {
-				alert("Planner Added!");
+				toast.success("Planner Added!");
 				handleClose();
 			})
 			.catch((e) => {
-				if (e.respponse && e.respponse?.data?.message) {
-					alert(e.respponse?.data?.message);
+				if (e.response && e.response?.data?.message) {
+					toast.error(e.response?.data?.message);
 				} else {
-					alert("something went wrong!");
+					toast.error("something went wrong!");
 				}
 			})
 			.finally((v) => {
@@ -99,11 +106,14 @@ const PlannerList = () => {
 
 		deleteUserAPI(user_id)
 			.then(() => {
-				alert("User Deleted Successfully!");
+				toast.success("User Deleted Successfully!");
 			})
 			.catch((e) => {
-				console.log(e);
-				alert("something went wrong while deleting.");
+				if (e.response && e.response?.data?.message) {
+					toast.error(e.response?.data?.message);
+				} else {
+					toast.error("something went wrong!");
+				}
 			})
 			.finally(() => {
 				setdeleteLoadingState({
@@ -141,7 +151,8 @@ const PlannerList = () => {
 							<TableCell>Last Name</TableCell>
 							<TableCell>Email</TableCell>
 							<TableCell>Zone</TableCell>
-							<TableCell>Creted At</TableCell>
+							<TableCell>Created At</TableCell>
+							{isSuperAdmin ? <TableCell>Created By</TableCell> : null}
 							<TableCell>Delete</TableCell>
 						</TableRow>
 					</TableHead>
@@ -155,9 +166,12 @@ const PlannerList = () => {
 											{row.first_name}
 										</TableCell>
 										<TableCell>{row.last_name}</TableCell>
-										<TableCell>{row.email}</TableCell>
+										<TableCell>{row.user_email}</TableCell>
 										<TableCell>{row.zone_name}</TableCell>
 										<TableCell>{row.created_at}</TableCell>
+										{isSuperAdmin ? (
+											<TableCell>{row.created_by_user_email}</TableCell>
+										) : null}
 										<TableCell>
 											<Button
 												variant="contained"

@@ -62,6 +62,10 @@ export const adminRouter = createBrowserRouter([
 		element: <ProcessedOutput />,
 	},
 	{
+		path: "/planners",
+		element: <PlannerList />,
+	},
+	{
 		path: "/",
 		element: <Videos />,
 	},

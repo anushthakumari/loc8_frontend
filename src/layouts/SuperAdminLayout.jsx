@@ -10,7 +10,6 @@ import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
 import Container from "@mui/material/Container";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -18,13 +17,10 @@ import ListItemText from "@mui/material/ListItemText";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import GroupIcon from "@mui/icons-material/Group";
 import PermContactCalendarIcon from "@mui/icons-material/PermContactCalendar";
 import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
-import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import { Button, Stack } from "@mui/material";
 
 import Copyright from "../components/Copyright";
@@ -59,7 +55,7 @@ const navs = [
 		link: "/planners",
 		Icon: PermContactCalendarIcon,
 		isSuperAdmin: true,
-		isAdmin: false,
+		isAdmin: true,
 	},
 	// {
 	// 	title: "Add Planner",
