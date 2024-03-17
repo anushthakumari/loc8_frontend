@@ -26,7 +26,12 @@ import { Button, Stack, CircularProgress } from "@mui/material";
 
 import SuperAdminLayout from "../layouts/SuperAdminLayout";
 
-import { addUserAPI, getAdminsAPI, deleteUserAPI } from "../apis/admins.apis";
+import {
+	addUserAPI,
+	getAdminsAPI,
+	deleteUserAPI,
+	editUserAPI,
+} from "../apis/admins.apis";
 import { getZonesAPI } from "../apis/location.apis";
 
 import { cleanString } from "../utils/helper.utils";
@@ -39,6 +44,16 @@ const AdminList = () => {
 		isLoading: false,
 		user_id: null,
 	});
+	const [formState, setformState] = useState({
+		first_name: "",
+		last_name: "",
+		email: "",
+		emp_id: "",
+		password: "",
+		zone_id: null,
+		id: null,
+	});
+	const [isEditing, setisEditing] = useState(false);
 
 	const {
 		data,
@@ -49,6 +64,7 @@ const AdminList = () => {
 
 	const handleClose = () => {
 		setisFormOpen(false);
+		setformState({});
 	};
 
 	const openForm = () => {
@@ -61,19 +77,23 @@ const AdminList = () => {
 		setisLoading(true);
 		const data = new FormData(e.currentTarget);
 
+		const saveAPI = !isEditing
+			? addUserAPI
+			: editUserAPI.bind(this, formState.id);
+
 		const d = {
-			first_name: cleanString(data.get("fname")),
-			last_name: cleanString(data.get("lname")),
-			emp_id: cleanString(data.get("emp_id")),
-			email: cleanString(data.get("email")),
-			password: cleanString(data.get("password")),
-			zone_id: cleanString(data.get("zone_id")),
+			first_name: cleanString(formState.first_name),
+			last_name: cleanString(formState.last_name),
+			emp_id: cleanString(formState.emp_id),
+			email: cleanString(formState.email),
+			password: cleanString(formState.password || ""),
+			zone_id: formState.zone_id,
 			role_id: 2,
 		};
 
-		addUserAPI(d)
+		saveAPI(d)
 			.then((res) => {
-				alert("Admin Added!");
+				toast.success("Saved Successfully!");
 				handleClose();
 			})
 			.catch((e) => {
@@ -114,6 +134,31 @@ const AdminList = () => {
 			});
 	};
 
+	const handleInputChange = (e) => {
+		const name = e.target.name;
+
+		console.log({ name, v: e.target.value, e });
+		setformState((prev) => {
+			return {
+				...prev,
+				[name]: e.target.value,
+			};
+		});
+	};
+
+	const handleEdit = (user) => {
+		setisEditing(true);
+		setisFormOpen(true);
+		setformState({
+			first_name: user.first_name,
+			last_name: user.last_name,
+			email: user.email,
+			emp_id: user.employee_id,
+			zone_id: user.zone_id,
+			id: user.id,
+		});
+	};
+
 	return (
 		<SuperAdminLayout activeLink="/admins">
 			{fetchingAdmin || zoneDataResp.isLoading ? (
@@ -143,6 +188,7 @@ const AdminList = () => {
 							<TableCell>Email</TableCell>
 							<TableCell>Zone</TableCell>
 							<TableCell>Created At</TableCell>
+							<TableCell>Edit</TableCell>
 							<TableCell>Delete</TableCell>
 						</TableRow>
 					</TableHead>
@@ -159,6 +205,19 @@ const AdminList = () => {
 										<TableCell>{row.email}</TableCell>
 										<TableCell>{row.zone_name}</TableCell>
 										<TableCell>{row.created_at}</TableCell>
+										<TableCell>
+											<Button
+												variant="contained"
+												color="success"
+												disableElevation
+												onClick={handleEdit.bind(this, row)}
+												disabled={
+													deleteLoadingState.isLoading &&
+													deleteLoadingState.user_id === row.id
+												}>
+												Edit
+											</Button>
+										</TableCell>
 										<TableCell>
 											<Button
 												variant="contained"
@@ -195,21 +254,25 @@ const AdminList = () => {
 								<Grid item xs={12} sm={6}>
 									<TextField
 										autoComplete="given-name"
-										name="fname"
+										name="first_name"
 										required
 										fullWidth
-										id="fisrt_name"
+										id="first_name"
 										label="Employee First Name"
+										value={formState.first_name}
+										onChange={handleInputChange}
 										autoFocus
 									/>
 								</Grid>
 								<Grid item xs={12} sm={6}>
 									<TextField
 										autoComplete="family-name"
-										name="lname"
+										name="last_name"
 										required
 										fullWidth
 										id="last_name"
+										value={formState.last_name}
+										onChange={handleInputChange}
 										label="Employee Last Name"
 										autoFocus
 									/>
@@ -221,6 +284,8 @@ const AdminList = () => {
 										id="emp_id"
 										label="Employee ID"
 										name="emp_id"
+										value={formState.emp_id}
+										onChange={handleInputChange}
 										autoComplete="family-name"
 									/>
 								</Grid>
@@ -231,6 +296,8 @@ const AdminList = () => {
 										id="email"
 										label="Email Address"
 										name="email"
+										value={formState.email}
+										onChange={handleInputChange}
 										autoComplete="email"
 									/>
 								</Grid>
@@ -240,7 +307,9 @@ const AdminList = () => {
 										<Select
 											name="zone_id"
 											labelId="zone-select-label"
-											id="zone-select"
+											id="zone_id"
+											value={formState.zone_id}
+											onChange={handleInputChange}
 											required>
 											{zoneDataResp?.data
 												? zoneDataResp.data.map((v) => (
@@ -252,8 +321,10 @@ const AdminList = () => {
 								</Grid>
 								<Grid item xs={12}>
 									<TextField
-										required
+										required={!isEditing}
 										fullWidth
+										value={formState.password}
+										onChange={handleInputChange}
 										name="password"
 										label="Password"
 										type="password"
