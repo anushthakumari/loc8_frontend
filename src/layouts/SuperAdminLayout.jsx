@@ -139,8 +139,6 @@ export default function SuperAdminLayout({
 		roleNavs = navs.filter((v) => v.isAdmin);
 	}
 
-	console.log(userData, roleNavs);
-
 	const activeNav = roleNavs.find((v) => v.link === activeLink);
 
 	const { saveUser } = useAuthState();

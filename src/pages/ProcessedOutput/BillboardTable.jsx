@@ -39,6 +39,10 @@ export default function BillboardTable({ data, onMerge }) {
 	};
 
 	const handleMerge = () => {
+		if (!window.confirm("Are you sure you want to merge?!")) {
+			return;
+		}
+
 		setisLoading(true);
 		mergeBillboardsAPI(selectedBills)
 			.then((v) => {

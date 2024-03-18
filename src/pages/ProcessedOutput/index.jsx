@@ -1,8 +1,10 @@
 import React from "react";
 import useSWR from "swr";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 
 import SuperAdminLayout from "../../layouts/SuperAdminLayout";
 import BillboardTable from "./BillboardTable";
@@ -42,6 +44,12 @@ const ProcessedOutput = () => {
 						Detected Billboards
 					</Typography>
 					<BillboardTable data={data.billboards} onMerge={handleMerge} />
+
+					<Box mt={4}>
+						<Button LinkComponent={Link} variant="contained" to="/add-video">
+							Done
+						</Button>
+					</Box>
 				</>
 			) : null}
 		</SuperAdminLayout>

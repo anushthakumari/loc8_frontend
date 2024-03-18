@@ -1,6 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
+import io from "socket.io-client";
 
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -19,6 +20,7 @@ import {
 import { addVideosAPI } from "../../apis/videos.apis";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
+import UploadProgress from "./UploadProgress";
 
 const defaultStateOptions = [{ value: 0, label: "Please Select Zone" }];
 
@@ -32,6 +34,7 @@ export default function AddVideo() {
 		city_id: null,
 		file: null,
 	});
+	const [progress, setprogress] = useState(0);
 
 	const citiesDataResp = useSWR(
 		selectedData.state_id
@@ -129,6 +132,25 @@ export default function AddVideo() {
 			});
 	};
 
+	useEffect(() => {
+		const socketInstance = io("http://localhost:5000");
+
+		socketInstance.on("connect", () => {
+			console.log("Connected to server");
+		});
+
+		socketInstance.on("processing_progress", (data) => {
+			// console.log(`Received processing_progress:`, data);
+			setprogress(data.percentage);
+		});
+
+		return () => {
+			if (socketInstance) {
+				socketInstance.disconnect();
+			}
+		};
+	}, []);
+
 	return (
 		<SuperAdminLayout activeLink="/add-video">
 			<Container component="main" maxWidth="xs">
@@ -202,7 +224,7 @@ export default function AddVideo() {
 						</Button>
 					</Box>
 				</Box>
-				<Loader open={isUploading} />
+				<UploadProgress isLoading={isUploading} progress={progress} />
 			</Container>
 		</SuperAdminLayout>
 	);
