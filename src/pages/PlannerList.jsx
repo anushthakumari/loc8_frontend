@@ -33,6 +33,7 @@ import { getZonesAPI } from "../apis/location.apis";
 
 import { cleanString } from "../utils/helper.utils";
 import { toast } from "react-toastify";
+import AreaSelector from "../components/AreaSelector";
 
 const PlannerList = () => {
 	const [isFormOpen, setisFormOpen] = useState(false);
@@ -41,17 +42,38 @@ const PlannerList = () => {
 		isLoading: false,
 		user_id: null,
 	});
+	const [isEditing, setisEditing] = useState(false);
 
+	const [formState, setformState] = useState({
+		first_name: "",
+		last_name: "",
+		emp_id: "",
+		email: "",
+		zone_id: 0,
+		state_id: 0,
+		city_id: 0,
+		password: "",
+	});
 	const {
 		data,
 		error,
 		isLoading: fetchingPlanners,
 	} = useSWR("/admins/planners", getPlannersAPI);
-	const zoneDataResp = useSWR("/location/zones", getZonesAPI);
 
 	const user = useAuth();
 
 	const isSuperAdmin = user.role_id === roles.SUPERADMIN;
+
+	const areaSelectorChange = (data) => {
+		setformState((prev) => ({
+			...prev,
+			zone_id: data.zone.id,
+			state_id: data.state.id,
+			city_id: data.city.id,
+		}));
+	};
+
+	console.log(formState);
 
 	const handleClose = () => {
 		setisFormOpen(false);
@@ -61,6 +83,17 @@ const PlannerList = () => {
 		setisFormOpen(true);
 	};
 
+	const handleInputChange = (e) => {
+		const name = e.target.name;
+
+		setformState((prev) => {
+			return {
+				...prev,
+				[name]: e.target.value,
+			};
+		});
+	};
+
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
@@ -68,12 +101,14 @@ const PlannerList = () => {
 		const data = new FormData(e.currentTarget);
 
 		const d = {
-			first_name: cleanString(data.get("fname")),
-			last_name: cleanString(data.get("lname")),
-			emp_id: cleanString(data.get("emp_id")),
-			email: cleanString(data.get("email")),
-			password: cleanString(data.get("password")),
-			zone_id: cleanString(data.get("zone_id")),
+			first_name: cleanString(formState.first_name),
+			last_name: cleanString(formState.last_name),
+			emp_id: cleanString(formState.emp_id),
+			email: cleanString(formState.email),
+			password: cleanString(formState.password),
+			zone_id: formState.zone_id,
+			state_id: formState.state_id,
+			city_id: formState.city_id,
 			role_id: 1,
 		};
 
@@ -123,9 +158,24 @@ const PlannerList = () => {
 			});
 	};
 
+	const handleEdit = (user) => {
+		setisEditing(true);
+		setisFormOpen(true);
+		setformState({
+			first_name: user.first_name,
+			last_name: user.last_name,
+			email: user.user_email,
+			emp_id: user.employee_id,
+			zone_id: user.zone_id,
+			state_id: user.state_id,
+			city_id: user.city_id,
+			id: user.id,
+		});
+	};
+
 	return (
 		<SuperAdminLayout activeLink="/planners">
-			{fetchingPlanners || zoneDataResp.isLoading ? (
+			{fetchingPlanners ? (
 				<center>
 					<Stack direction={"row"} alignItems={"center"} gap={1}>
 						<CircularProgress size={18} />
@@ -151,8 +201,11 @@ const PlannerList = () => {
 							<TableCell>Last Name</TableCell>
 							<TableCell>Email</TableCell>
 							<TableCell>Zone</TableCell>
+							<TableCell>State</TableCell>
+							<TableCell>City</TableCell>
 							<TableCell>Created At</TableCell>
 							{isSuperAdmin ? <TableCell>Created By</TableCell> : null}
+							<TableCell>Delete</TableCell>
 							<TableCell>Delete</TableCell>
 						</TableRow>
 					</TableHead>
@@ -168,10 +221,25 @@ const PlannerList = () => {
 										<TableCell>{row.last_name}</TableCell>
 										<TableCell>{row.user_email}</TableCell>
 										<TableCell>{row.zone_name}</TableCell>
+										<TableCell>{row.state_name}</TableCell>
+										<TableCell>{row.city_name}</TableCell>
 										<TableCell>{row.created_at}</TableCell>
 										{isSuperAdmin ? (
 											<TableCell>{row.created_by_user_email}</TableCell>
 										) : null}
+										<TableCell>
+											<Button
+												variant="contained"
+												color="success"
+												disableElevation
+												onClick={handleEdit.bind(this, row)}
+												disabled={
+													deleteLoadingState.isLoading &&
+													deleteLoadingState.user_id === row.id
+												}>
+												Edit
+											</Button>
+										</TableCell>
 										<TableCell>
 											<Button
 												variant="contained"
@@ -208,22 +276,26 @@ const PlannerList = () => {
 								<Grid item xs={12} sm={6}>
 									<TextField
 										autoComplete="given-name"
-										name="fname"
+										name="first_name"
 										required
 										fullWidth
-										id="fisrt_name"
+										id="first_name"
 										label="Employee First Name"
+										value={formState.first_name}
+										onChange={handleInputChange}
 										autoFocus
 									/>
 								</Grid>
 								<Grid item xs={12} sm={6}>
 									<TextField
 										autoComplete="family-name"
-										name="lname"
+										name="last_name"
 										required
 										fullWidth
 										id="last_name"
 										label="Employee Last Name"
+										value={formState.last_name}
+										onChange={handleInputChange}
 										autoFocus
 									/>
 								</Grid>
@@ -234,6 +306,8 @@ const PlannerList = () => {
 										id="emp_id"
 										label="Employee ID"
 										name="emp_id"
+										value={formState.emp_id}
+										onChange={handleInputChange}
 										autoComplete="family-name"
 									/>
 								</Grid>
@@ -244,24 +318,17 @@ const PlannerList = () => {
 										id="email"
 										label="Email Address"
 										name="email"
+										type="email"
 										autoComplete="email"
+										value={formState.email}
+										onChange={handleInputChange}
 									/>
 								</Grid>
 								<Grid item xs={12}>
-									<FormControl fullWidth required>
-										<InputLabel id="zone-select-label">Select Zone</InputLabel>
-										<Select
-											name="zone_id"
-											labelId="zone-select-label"
-											id="zone-select"
-											required>
-											{zoneDataResp?.data
-												? zoneDataResp.data.map((v) => (
-														<MenuItem value={v.zone_id}>{v.zone_name}</MenuItem>
-												  ))
-												: null}
-										</Select>
-									</FormControl>
+									<AreaSelector
+										onChange={areaSelectorChange}
+										zoneId={formState.zone_id}
+									/>
 								</Grid>
 								<Grid item xs={12}>
 									<TextField
@@ -271,6 +338,8 @@ const PlannerList = () => {
 										label="Password"
 										type="password"
 										id="password"
+										value={formState.password}
+										onChange={handleInputChange}
 										autoComplete="new-password"
 									/>
 								</Grid>

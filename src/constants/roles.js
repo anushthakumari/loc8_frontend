@@ -1,7 +1,8 @@
 const roles = {
 	PLANNER: 1,
 	ADMIN: 2,
-	SUPERADMIN: 3,
+	CONTROLLER: 3,
+	SUPERADMIN: 4,
 };
 
 export default roles;

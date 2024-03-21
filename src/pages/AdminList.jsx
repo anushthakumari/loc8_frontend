@@ -136,8 +136,6 @@ const AdminList = () => {
 
 	const handleInputChange = (e) => {
 		const name = e.target.name;
-
-		console.log({ name, v: e.target.value, e });
 		setformState((prev) => {
 			return {
 				...prev,
