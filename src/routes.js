@@ -8,6 +8,7 @@ import ProcessedOutput from "./pages/ProcessedOutput";
 import Videos from "./pages/videos";
 import PlannerList from "./pages/PlannerList";
 import Test from "./pages/Test";
+import ControllerList from "./pages/ControllerList";
 
 export const authRouter = createBrowserRouter([
 	{
@@ -24,6 +25,10 @@ export const superAdminRouter = createBrowserRouter([
 	{
 		path: "/",
 		element: <Marketting />,
+	},
+	{
+		path: "/controllers",
+		element: <ControllerList />,
 	},
 	{
 		path: "/admins",

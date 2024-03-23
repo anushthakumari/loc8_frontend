@@ -39,6 +39,13 @@ const navs = [
 		isAdmin: false,
 	},
 	{
+		title: "Controllers",
+		link: "/controllers",
+		Icon: GroupIcon,
+		isSuperAdmin: true,
+		isAdmin: false,
+	},
+	{
 		title: "Marketting",
 		link: "/",
 		Icon: GroupIcon,

@@ -13,6 +13,18 @@ export async function getAdminsAPI() {
 	return data;
 }
 
+export async function getControllersAPI() {
+	const token = loginUtils.getUser().token;
+
+	const { data } = await axios.get("admin/controllers", {
+		headers: {
+			Authorization: token,
+		},
+	});
+
+	return data;
+}
+
 export async function getPlannersAPI() {
 	const token = loginUtils.getUser().token;
 
