@@ -83,6 +83,14 @@ const navs = [
 		isSuperAdmin: true,
 		isAdmin: true,
 	},
+	{
+		title: "Create Brief",
+		link: "/create-brief",
+		Icon: VideoCallIcon,
+		isSuperAdmin: true,
+		isController: true,
+		isAdmin: false,
+	},
 ];
 
 const AppBar = styled(MuiAppBar, {
@@ -144,6 +152,10 @@ export default function SuperAdminLayout({
 
 	if (userData.role_id === roles.ADMIN) {
 		roleNavs = navs.filter((v) => v.isAdmin);
+	}
+
+	if (userData.role_id === roles.CONTROLLER) {
+		roleNavs = navs.filter((v) => v.isController);
 	}
 
 	const activeNav = roleNavs.find((v) => v.link === activeLink);

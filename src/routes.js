@@ -9,6 +9,7 @@ import Videos from "./pages/videos";
 import PlannerList from "./pages/PlannerList";
 import Test from "./pages/Test";
 import ControllerList from "./pages/ControllerList";
+import CreateBrief from "./pages/CreateBrief";
 
 export const authRouter = createBrowserRouter([
 	{
@@ -50,6 +51,10 @@ export const superAdminRouter = createBrowserRouter([
 		path: "/videos",
 		element: <Videos />,
 	},
+	{
+		path: "/create-brief",
+		element: <CreateBrief />,
+	},
 ]);
 
 export const adminRouter = createBrowserRouter([
@@ -72,6 +77,17 @@ export const adminRouter = createBrowserRouter([
 	{
 		path: "/videos",
 		element: <Videos />,
+	},
+]);
+
+export const controllerRouter = createBrowserRouter([
+	{
+		path: "/",
+		element: <CreateBrief />,
+	},
+	{
+		path: "/create-brief",
+		element: <CreateBrief />,
 	},
 ]);
 

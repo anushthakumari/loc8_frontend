@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid";
 import RSelect from "react-select";
 
 import { getCitiesAPI, getZonesAPI, getStatesAPI } from "../apis/location.apis";
+import { Stack, Box } from "@mui/material";
 
 const defaultStateOptions = [{ value: 0, label: "Please Select Zone" }];
 
@@ -15,11 +16,12 @@ export default function AreaSelector({
 	defaultZoneValue,
 	defaultStateValue,
 	defaultCityValue,
+	layoutDirection = "column",
 }) {
 	const [selectedData, setselectedData] = useState({
-		zone: defaultZoneValue || { id: null },
-		state: defaultStateValue || { id: null },
-		city: defaultCityValue || { id: null },
+		zone: defaultZoneValue || { id: 0, label: "Select Zone", value: 0 },
+		state: defaultStateValue || { id: 0, label: "Select State", value: 0 },
+		city: defaultCityValue || { id: 0, label: "Select City", value: 0 },
 	});
 
 	const citiesDataResp = useSWR(
@@ -87,8 +89,8 @@ export default function AreaSelector({
 		: defaultCityOptions;
 
 	return (
-		<Grid container spacing={2}>
-			<Grid item xs={12}>
+		<Stack width={"100%"} direction={layoutDirection} spacing={2}>
+			<Box flex={1}>
 				<RSelect
 					isLoading={zoneDataResp.isLoading}
 					placeholder="Select Zone"
@@ -97,8 +99,8 @@ export default function AreaSelector({
 					onChange={handleSelectChange.bind(this, "zone")}
 					required
 				/>
-			</Grid>
-			<Grid item xs={12}>
+			</Box>
+			<Box flex={1}>
 				<RSelect
 					isLoading={statesDataResp.isLoading}
 					placeholder="Select State"
@@ -107,8 +109,8 @@ export default function AreaSelector({
 					onChange={handleSelectChange.bind(this, "state")}
 					required
 				/>
-			</Grid>
-			<Grid item xs={12}>
+			</Box>
+			<Box flex={1}>
 				<RSelect
 					isLoading={citiesDataResp.isLoading}
 					placeholder="Select City"
@@ -117,7 +119,7 @@ export default function AreaSelector({
 					onChange={handleSelectChange.bind(this, "city")}
 					required
 				/>
-			</Grid>
-		</Grid>
+			</Box>
+		</Stack>
 	);
 }

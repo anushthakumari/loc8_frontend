@@ -158,7 +158,7 @@ const ControllerList = () => {
 	};
 
 	return (
-		<SuperAdminLayout activeLink="/admins">
+		<SuperAdminLayout activeLink="/controllers">
 			{isFetchingControllers || zoneDataResp.isLoading ? (
 				<center>
 					<Stack direction={"row"} alignItems={"center"} gap={1}>

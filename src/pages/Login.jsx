@@ -27,7 +27,7 @@ export default function Login() {
 
 		setisLoading(true);
 
-		login(data.get("email"), data.get("password"))
+		login(data.get("email").trim(), data.get("password").trim())
 			.then((data) => {
 				saveUser(data);
 				navigate("/");

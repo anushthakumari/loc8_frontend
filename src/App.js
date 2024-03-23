@@ -6,6 +6,7 @@ import {
 	superAdminRouter,
 	adminRouter,
 	plannerRouter,
+	controllerRouter,
 } from "./routes";
 
 import useAuth from "./hooks/useAuth";
@@ -23,6 +24,8 @@ export default function App() {
 			return <RouterProvider router={superAdminRouter} />;
 		case roles.ADMIN:
 			return <RouterProvider router={adminRouter} />;
+		case roles.CONTROLLER:
+			return <RouterProvider router={controllerRouter} />;
 		case roles.PLANNER:
 			return <RouterProvider router={plannerRouter} />;
 
