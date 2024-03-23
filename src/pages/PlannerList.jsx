@@ -9,16 +9,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Link } from "react-router-dom";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -28,8 +23,12 @@ import SuperAdminLayout from "../layouts/SuperAdminLayout";
 import useAuth from "../hooks/useAuth";
 import roles from "../constants/roles";
 
-import { addUserAPI, getPlannersAPI, deleteUserAPI } from "../apis/admins.apis";
-import { getZonesAPI } from "../apis/location.apis";
+import {
+	addUserAPI,
+	getPlannersAPI,
+	deleteUserAPI,
+	editUserAPI,
+} from "../apis/admins.apis";
 
 import { cleanString } from "../utils/helper.utils";
 import { toast } from "react-toastify";
@@ -73,8 +72,6 @@ const PlannerList = () => {
 		}));
 	};
 
-	console.log(formState);
-
 	const handleClose = () => {
 		setisFormOpen(false);
 	};
@@ -98,7 +95,6 @@ const PlannerList = () => {
 		e.preventDefault();
 
 		setisLoading(true);
-		const data = new FormData(e.currentTarget);
 
 		const d = {
 			first_name: cleanString(formState.first_name),
@@ -112,7 +108,11 @@ const PlannerList = () => {
 			role_id: 1,
 		};
 
-		addUserAPI(d)
+		const saveAPI = isEditing
+			? editUserAPI.bind(this, formState.id)
+			: addUserAPI;
+
+		saveAPI(d)
 			.then((res) => {
 				toast.success("Planner Added!");
 				handleClose();
@@ -169,6 +169,9 @@ const PlannerList = () => {
 			zone_id: user.zone_id,
 			state_id: user.state_id,
 			city_id: user.city_id,
+			city_name: user.city_name,
+			state_name: user.state_name,
+			zone_name: user.zone_name,
 			id: user.id,
 		});
 	};
@@ -327,12 +330,26 @@ const PlannerList = () => {
 								<Grid item xs={12}>
 									<AreaSelector
 										onChange={areaSelectorChange}
-										zoneId={formState.zone_id}
+										defaultZoneValue={{
+											label: formState.zone_name,
+											value: formState.zone_id,
+											id: formState.zone_id,
+										}}
+										defaultStateValue={{
+											label: formState.state_name,
+											value: formState.state_id,
+											id: formState.state_id,
+										}}
+										defaultCityValue={{
+											label: formState.city_name,
+											value: formState.city_id,
+											id: formState.city_id,
+										}}
 									/>
 								</Grid>
 								<Grid item xs={12}>
 									<TextField
-										required
+										required={!isEditing}
 										fullWidth
 										name="password"
 										label="Password"

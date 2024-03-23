@@ -10,18 +10,23 @@ const defaultStateOptions = [{ value: 0, label: "Please Select Zone" }];
 
 const defaultCityOptions = [{ value: 0, label: "Please Select State" }];
 
-export default function AreaSelector({ onChange, zoneId }) {
+export default function AreaSelector({
+	onChange,
+	defaultZoneValue,
+	defaultStateValue,
+	defaultCityValue,
+}) {
 	const [selectedData, setselectedData] = useState({
-		zone: { id: null },
-		state: { id: null },
-		city: { id: null },
+		zone: defaultZoneValue || { id: null },
+		state: defaultStateValue || { id: null },
+		city: defaultCityValue || { id: null },
 	});
 
 	const citiesDataResp = useSWR(
 		selectedData.state.id
 			? "/location/cities?state_id=" + selectedData.state.id
 			: null,
-		getCitiesAPI.bind(this, selectedData.state_id)
+		getCitiesAPI.bind(this, selectedData.state.id)
 	);
 
 	const zoneDataResp = useSWR("/location/zones", getZonesAPI);
@@ -30,12 +35,25 @@ export default function AreaSelector({ onChange, zoneId }) {
 		selectedData.zone.id
 			? "/location/states?zone_id=" + selectedData.zone.id
 			: null,
-		getStatesAPI.bind(this, selectedData.zone_id)
+		getStatesAPI.bind(this, selectedData.zone.id)
 	);
 
 	const handleSelectChange = (key = "", d = {}) => {
 		setselectedData((prev) => {
-			const newData = { ...prev, [key]: d };
+			let newData = {};
+
+			if (key === "zone") {
+				newData = { zone: d, state: { id: null }, city: { id: null } };
+			}
+
+			if (key === "state") {
+				newData = { ...prev, state: d, city: { id: null } };
+			}
+
+			if (key === "city") {
+				newData = { ...prev, city: d };
+			}
+
 			onChange?.(newData);
 			return newData;
 		});
@@ -75,7 +93,7 @@ export default function AreaSelector({ onChange, zoneId }) {
 					isLoading={zoneDataResp.isLoading}
 					placeholder="Select Zone"
 					options={zoneOptions}
-					defaultValue={zoneId}
+					value={selectedData.zone}
 					onChange={handleSelectChange.bind(this, "zone")}
 					required
 				/>
@@ -85,6 +103,7 @@ export default function AreaSelector({ onChange, zoneId }) {
 					isLoading={statesDataResp.isLoading}
 					placeholder="Select State"
 					options={stateOptions}
+					value={selectedData.state}
 					onChange={handleSelectChange.bind(this, "state")}
 					required
 				/>
@@ -94,6 +113,7 @@ export default function AreaSelector({ onChange, zoneId }) {
 					isLoading={citiesDataResp.isLoading}
 					placeholder="Select City"
 					options={cityOptions}
+					value={selectedData.city}
 					onChange={handleSelectChange.bind(this, "city")}
 					required
 				/>
