@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useCallback } from "react";
+import React, { useState, forwardRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
 	FormControl,
@@ -22,17 +22,10 @@ import { useDropzone } from "react-dropzone";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
-import AreaSelector from "../../components/AreaSelector";
-import CustomButton from "../../components/CustomButton";
-import SuperAdminLayout from "../../layouts/SuperAdminLayout";
-
-import { createBrief } from "../../apis/briefs.apis";
+import AreaSelector from "./AreaSelector";
+import CustomButton from "./CustomButton";
 
 import "react-datepicker/dist/react-datepicker.css";
-
-const DateInput = forwardRef(({ value, onClick }, ref) => (
-	<TextField value={value} onClick={onClick} ref={ref} />
-));
 
 export const defaultBudget = {
 	zone: {},
@@ -42,22 +35,28 @@ export const defaultBudget = {
 	id: 1,
 };
 
-const CreateBrief = ({ onSubmit }) => {
+export const defaultFormState = {
+	isImmediate: 0,
+	startDate: "",
+	specialNotes: "",
+	mediaApproach: "",
+	category: "",
+	brand: "",
+	targetAud: "",
+	campObj: "",
+	brandLogo: null,
+};
+
+const DateInput = forwardRef(({ value, onClick }, ref) => (
+	<TextField value={value} onClick={onClick} ref={ref} />
+));
+
+const BriefForm = ({ onSubmit, initialBudgetState, initialFormState }) => {
 	const navigate = useNavigate();
 
-	const [budgets, setbudgets] = useState([defaultBudget]);
+	const [budgets, setbudgets] = useState(initialBudgetState);
 	const [isLoading, setisLoading] = useState(false);
-	const [formState, setformState] = useState({
-		isImmediate: 0,
-		startDate: "",
-		specialNotes: "",
-		mediaApproach: "",
-		category: "",
-		brand: "",
-		targetAud: "",
-		campObj: "",
-		brandLogo: null,
-	});
+	const [formState, setformState] = useState(initialFormState);
 	const [focusedBudgetErrorField, setFocusedBudgetErrorField] = useState({
 		index: 0,
 		msg: "",
@@ -240,24 +239,15 @@ const CreateBrief = ({ onSubmit }) => {
 
 		setisLoading(true);
 
-		createBrief(fd)
-			.then((v) => {
-				toast.success("Created Successfully!");
-				navigate("/");
-			})
-			.catch((e) => {
-				let msg = "Something went wrong!";
-
-				if (e.response && e.response?.data?.message) {
-					msg = e.response?.data?.message;
-				}
-
-				toast.error(msg);
-			})
-			.finally(() => {
-				setisLoading(false);
-			});
+		onSubmit(fd).finally(() => {
+			setisLoading(false);
+		});
 	};
+
+	useEffect(() => {
+		setbudgets(initialBudgetState);
+		setformState(initialFormState);
+	}, [initialBudgetState, initialFormState]);
 
 	return (
 		<Stack justifyContent={"center"} alignItems={"center"}>
@@ -376,6 +366,9 @@ const CreateBrief = ({ onSubmit }) => {
 															<AreaSelector
 																onChange={handleBudgetAreaChange.bind(this, i)}
 																layoutDirection="row"
+																defaultCityValue={budgets[i].city}
+																defaultStateValue={budgets[i].state}
+																defaultZoneValue={budgets[i].zone}
 															/>
 															{focusedBudgetErrorField.index === i ? (
 																<Typography color="error">
@@ -533,7 +526,7 @@ const CreateBrief = ({ onSubmit }) => {
 	);
 };
 
-export default CreateBrief;
+export default BriefForm;
 
 function SectionTitle({ children }) {
 	return (

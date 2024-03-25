@@ -49,6 +49,21 @@ export async function deleteBriefAPI(brief_id) {
 	return true;
 }
 
+export async function getBriefDetailsByBriefIdAPI(brief_id) {
+	const token = loginUtils.getUser().token;
+
+	const { data } = await axios.get(
+		"briefs/briefs/" + encodeURIComponent(brief_id),
+		{
+			headers: {
+				Authorization: token,
+			},
+		}
+	);
+
+	return data;
+}
+
 export async function createBrief(formData) {
 	const token = loginUtils.getUser().token;
 

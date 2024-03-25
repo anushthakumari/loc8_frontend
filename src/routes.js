@@ -11,6 +11,7 @@ import Test from "./pages/Test";
 import ControllerList from "./pages/ControllerList";
 import CreateBrief from "./pages/CreateBrief";
 import BriefList from "./pages/BriefList";
+import EditBrief from "./pages/EditBrief";
 
 export const authRouter = createBrowserRouter([
 	{
@@ -89,6 +90,10 @@ export const controllerRouter = createBrowserRouter([
 	{
 		path: "/create-brief",
 		element: <CreateBrief />,
+	},
+	{
+		path: "/edit-brief/:brief_id",
+		element: <EditBrief />,
 	},
 ]);
 

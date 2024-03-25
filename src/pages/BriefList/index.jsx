@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import useSWR from "swr";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -24,6 +25,7 @@ import Loader from "../../components/Loader";
 import { deleteBriefAPI, getBriefListAPI } from "../../apis/briefs.apis";
 import BriefStatusTag from "../../components/BriefStatusTag";
 import { toast } from "react-toastify";
+import { ImageOutlined } from "@mui/icons-material";
 
 function CountToolTip({ counts }) {
 	return (
@@ -46,6 +48,8 @@ function TableHeadCell(params) {
 
 const BriefList = () => {
 	const [isLoaderOpen, setisLoaderOpen] = useState(false);
+
+	const navigate = useNavigate();
 	const { data, error, isLoading, mutate } = useSWR(
 		"/briefs/briefs",
 		getBriefListAPI
@@ -74,6 +78,10 @@ const BriefList = () => {
 			.finally(() => {
 				setisLoaderOpen(false);
 			});
+	};
+
+	const handleEdit = (brief_id) => {
+		navigate("/edit-brief/" + brief_id);
 	};
 
 	return (
@@ -165,11 +173,12 @@ const BriefList = () => {
 										</TableCell>
 										<TableCell align="right">
 											<Stack direction={"row"} gap={2}>
-												{/* <IconButton
+												<IconButton
+													onClick={handleEdit.bind(this, row.brief_id)}
 													sx={{ bgcolor: "green", color: "white" }}
 													size="small">
 													<ModeEditIcon fontSize="15" />
-												</IconButton> */}
+												</IconButton>
 												<IconButton
 													onClick={handleDelete.bind(this, row.brief_id)}
 													sx={{ bgcolor: "red", color: "white" }}

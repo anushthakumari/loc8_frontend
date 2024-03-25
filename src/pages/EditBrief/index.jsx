@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import useSWR from "swr";
 import {
 	FormControl,
 	Paper,
@@ -24,13 +25,17 @@ import RemoveIcon from "@mui/icons-material/Remove";
 
 import AreaSelector from "../../components/AreaSelector";
 import CustomButton from "../../components/CustomButton";
+import Loader from "../../components/Loader";
 import BriefForm, {
 	defaultBudget,
 	defaultFormState,
 } from "../../components/BriefForm";
 import SuperAdminLayout from "../../layouts/SuperAdminLayout";
 
-import { createBrief } from "../../apis/briefs.apis";
+import {
+	createBrief,
+	getBriefDetailsByBriefIdAPI,
+} from "../../apis/briefs.apis";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -38,22 +43,51 @@ const DateInput = forwardRef(({ value, onClick }, ref) => (
 	<TextField value={value} onClick={onClick} ref={ref} />
 ));
 
-const CreateBrief = () => {
+const EditBrief = () => {
 	const navigate = useNavigate();
+	const { brief_id } = useParams();
 
-	const [budgets, setbudgets] = useState([defaultBudget]);
-	const [isLoading, setisLoading] = useState(false);
-	const [formState, setformState] = useState({
-		isImmediate: 0,
-		startDate: "",
-		specialNotes: "",
-		mediaApproach: "",
-		category: "",
-		brand: "",
-		targetAud: "",
-		campObj: "",
+	const { data, isLoading, error } = useSWR(
+		brief_id ? "briefs/briefs/" + brief_id : null,
+		getBriefDetailsByBriefIdAPI.bind(this, brief_id)
+	);
+
+	const initialBudgets = data?.budgets?.map((v) => {
+		return {
+			...v,
+			zone: {
+				label: v.zone_name,
+				id: v.zone_id,
+				value: v.zone_id,
+			},
+			state: {
+				label: v.state_name,
+				id: v.state_id,
+				value: v.state_id,
+			},
+			city: {
+				label: v.city_name,
+				id: v.city_id,
+				value: v.city_id,
+			},
+		};
+	}) || [defaultBudget];
+
+	const initialFormState = {
+		isImmediate: data?.is_immediate_camp || 0,
+		startDate: data?.startDate || "",
+		specialNotes: data?.notes || "",
+		mediaApproach: data?.media_approach || "",
+		category: data?.category || "",
+		brand: data?.brand_name || "",
+		targetAud: data?.target_audience || "",
+		campObj: data?.campaign_obj || "",
 		brandLogo: null,
-	});
+	};
+
+	const [budgets, setbudgets] = useState([]);
+	// const [isLoading, setisLoading] = useState(false);
+	const [formState, setformState] = useState();
 	const [focusedBudgetErrorField, setFocusedBudgetErrorField] = useState({
 		index: 0,
 		msg: "",
@@ -160,48 +194,28 @@ const CreateBrief = () => {
 
 	const handleSubmit = async (fd) => {
 		try {
-			await createBrief(fd);
-			toast.success("Created Successfully!");
-			navigate("/");
+			// await createBrief(fd);
+			// toast.success("Created Successfully!");
+			// navigate("/");
 		} catch (e) {
-			let msg = "Something went wrong!";
-
-			if (e.response && e.response?.data?.message) {
-				msg = e.response?.data?.message;
-			}
-
-			toast.error(msg);
+			// let msg = "Something went wrong!";
+			// if (e.response && e.response?.data?.message) {
+			// 	msg = e.response?.data?.message;
+			// }
+			// toast.error(msg);
 		}
 	};
 
 	return (
-		<SuperAdminLayout activeLink={"/create-brief"}>
+		<SuperAdminLayout activeLink={"/"}>
 			<BriefForm
-				initialBudgetState={[defaultBudget]}
-				initialFormState={defaultFormState}
+				initialBudgetState={initialBudgets}
+				initialFormState={initialFormState}
 				onSubmit={handleSubmit}
 			/>
+			<Loader open={isLoading} />
 		</SuperAdminLayout>
 	);
 };
 
-export default CreateBrief;
-
-function SectionTitle({ children }) {
-	return (
-		<Box
-			padding={1}
-			sx={{
-				backgroundColor: "#f5ddba",
-			}}
-			width={"100%"}>
-			<Typography variant="body" mb={1}>
-				{children}
-			</Typography>
-		</Box>
-	);
-}
-
-function SectionContainer(params) {
-	return <Box padding={3} {...params} />;
-}
+export default EditBrief;
