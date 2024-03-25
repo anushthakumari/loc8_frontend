@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useCallback } from "react";
-import SuperAdminLayout from "../../layouts/SuperAdminLayout";
+import { useNavigate } from "react-router-dom";
 import {
 	FormControl,
 	Paper,
@@ -24,6 +24,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 
 import AreaSelector from "../../components/AreaSelector";
 import CustomButton from "../../components/CustomButton";
+import SuperAdminLayout from "../../layouts/SuperAdminLayout";
 
 import { createBrief } from "../../apis/briefs.apis";
 
@@ -42,6 +43,8 @@ const defaultBudget = {
 };
 
 const CreateBrief = () => {
+	const navigate = useNavigate();
+
 	const [budgets, setbudgets] = useState([defaultBudget]);
 	const [isLoading, setisLoading] = useState(false);
 	const [formState, setformState] = useState({
@@ -240,6 +243,7 @@ const CreateBrief = () => {
 		createBrief(fd)
 			.then((v) => {
 				toast.success("Created Successfully!");
+				navigate("/");
 			})
 			.catch((e) => {
 				let msg = "Something went wrong!";

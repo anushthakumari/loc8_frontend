@@ -52,6 +52,14 @@ const navs = [
 		isSuperAdmin: true,
 		isAdmin: false,
 	},
+	{
+		title: "Briefs",
+		link: "/",
+		Icon: GroupIcon,
+		isSuperAdmin: false,
+		isAdmin: false,
+		isController: true,
+	},
 	// {
 	// 	title: "Add Admin",
 	// 	link: "/add-admin",

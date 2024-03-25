@@ -13,10 +13,10 @@ export async function getAdminsAPI() {
 	return data;
 }
 
-export async function getControllersAPI() {
+export async function getBriefListAPI() {
 	const token = loginUtils.getUser().token;
 
-	const { data } = await axios.get("admin/controllers", {
+	const { data } = await axios.get("briefs/briefs", {
 		headers: {
 			Authorization: token,
 		},
@@ -37,10 +37,10 @@ export async function getPlannersAPI() {
 	return data;
 }
 
-export async function deleteUserAPI(user_id) {
+export async function deleteBriefAPI(brief_id) {
 	const token = loginUtils.getUser().token;
 
-	await axios.delete("admin/admins/" + encodeURIComponent(user_id), {
+	await axios.delete("briefs/briefs/" + encodeURIComponent(brief_id), {
 		headers: {
 			Authorization: token,
 		},
@@ -52,7 +52,7 @@ export async function deleteUserAPI(user_id) {
 export async function createBrief(formData) {
 	const token = loginUtils.getUser().token;
 
-	const { data } = await axios.post("briefs/brief", formData, {
+	const { data } = await axios.post("briefs/briefs", formData, {
 		headers: {
 			Authorization: token,
 			"Content-Type": "multipart/form-data",

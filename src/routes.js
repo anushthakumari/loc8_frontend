@@ -10,6 +10,7 @@ import PlannerList from "./pages/PlannerList";
 import Test from "./pages/Test";
 import ControllerList from "./pages/ControllerList";
 import CreateBrief from "./pages/CreateBrief";
+import BriefList from "./pages/BriefList";
 
 export const authRouter = createBrowserRouter([
 	{
@@ -83,7 +84,7 @@ export const adminRouter = createBrowserRouter([
 export const controllerRouter = createBrowserRouter([
 	{
 		path: "/",
-		element: <CreateBrief />,
+		element: <BriefList />,
 	},
 	{
 		path: "/create-brief",
