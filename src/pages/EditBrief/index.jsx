@@ -212,6 +212,7 @@ const EditBrief = () => {
 				initialBudgetState={initialBudgets}
 				initialFormState={initialFormState}
 				onSubmit={handleSubmit}
+				submitButtonText="save"
 			/>
 			<Loader open={isLoading} />
 		</SuperAdminLayout>

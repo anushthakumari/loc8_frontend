@@ -51,7 +51,12 @@ const DateInput = forwardRef(({ value, onClick }, ref) => (
 	<TextField value={value} onClick={onClick} ref={ref} />
 ));
 
-const BriefForm = ({ onSubmit, initialBudgetState, initialFormState }) => {
+const BriefForm = ({
+	onSubmit,
+	initialBudgetState,
+	initialFormState,
+	submitButtonText = "Create",
+}) => {
 	const navigate = useNavigate();
 
 	const [budgets, setbudgets] = useState(initialBudgetState);
@@ -514,7 +519,7 @@ const BriefForm = ({ onSubmit, initialBudgetState, initialFormState }) => {
 										size="large"
 										type="submit"
 										isLoading={isLoading}>
-										Create
+										{submitButtonText}
 									</CustomButton>
 								</Stack>
 							</Stack>

@@ -14,6 +14,8 @@ import Container from "@mui/material/Container";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -21,7 +23,10 @@ import GroupIcon from "@mui/icons-material/Group";
 import PermContactCalendarIcon from "@mui/icons-material/PermContactCalendar";
 import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
-import { Button, Stack } from "@mui/material";
+import ViewListIcon from "@mui/icons-material/ViewList";
+import EditNoteIcon from "@mui/icons-material/EditNote";
+import PublicIcon from "@mui/icons-material/Public";
+import PersonPinIcon from "@mui/icons-material/PersonPin";
 
 import Copyright from "../components/Copyright";
 
@@ -48,14 +53,14 @@ const navs = [
 	{
 		title: "Marketting",
 		link: "/",
-		Icon: GroupIcon,
+		Icon: PublicIcon,
 		isSuperAdmin: true,
 		isAdmin: false,
 	},
 	{
 		title: "Briefs",
 		link: "/",
-		Icon: GroupIcon,
+		Icon: ViewListIcon,
 		isSuperAdmin: false,
 		isAdmin: false,
 		isController: true,
@@ -68,7 +73,7 @@ const navs = [
 	{
 		title: "Planners",
 		link: "/planners",
-		Icon: PermContactCalendarIcon,
+		Icon: PersonPinIcon,
 		isSuperAdmin: true,
 		isAdmin: true,
 	},
@@ -78,14 +83,14 @@ const navs = [
 	// 	Icon: PersonAddAlt1Icon,
 	// },
 	{
-		title: "videos",
+		title: "View Data",
 		link: "/videos",
 		Icon: OndemandVideoIcon,
 		isSuperAdmin: true,
 		isAdmin: true,
 	},
 	{
-		title: "Add Video",
+		title: "Upload Video",
 		link: "/add-video",
 		Icon: VideoCallIcon,
 		isSuperAdmin: true,
@@ -94,7 +99,7 @@ const navs = [
 	{
 		title: "Create Brief",
 		link: "/create-brief",
-		Icon: VideoCallIcon,
+		Icon: EditNoteIcon,
 		isSuperAdmin: true,
 		isController: true,
 		isAdmin: false,

@@ -17,6 +17,7 @@ export default function AreaSelector({
 	defaultStateValue,
 	defaultCityValue,
 	layoutDirection = "column",
+	disableAll = false,
 }) {
 	const [selectedData, setselectedData] = useState({
 		zone: defaultZoneValue || { id: 0, label: "Select Zone", value: 0 },
@@ -97,6 +98,7 @@ export default function AreaSelector({
 					options={zoneOptions}
 					value={selectedData.zone}
 					onChange={handleSelectChange.bind(this, "zone")}
+					isDisabled={disableAll}
 					required
 				/>
 			</Box>
@@ -107,6 +109,7 @@ export default function AreaSelector({
 					options={stateOptions}
 					value={selectedData.state}
 					onChange={handleSelectChange.bind(this, "state")}
+					isDisabled={disableAll}
 					required
 				/>
 			</Box>
@@ -117,6 +120,7 @@ export default function AreaSelector({
 					options={cityOptions}
 					value={selectedData.city}
 					onChange={handleSelectChange.bind(this, "city")}
+					isDisabled={disableAll}
 					required
 				/>
 			</Box>
