@@ -8,7 +8,7 @@ import City from "./city";
 
 const Marketting = () => {
 	return (
-		<SuperAdminLayout activeLink="/">
+		<SuperAdminLayout activeLink="/marketing">
 			<Grid spacing={2} container>
 				<Grid md={6} item>
 					<States />

@@ -17,9 +17,14 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import { Button, Stack, CircularProgress } from "@mui/material";
+import { Button, Stack, CircularProgress, IconButton } from "@mui/material";
+
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 import SuperAdminLayout from "../layouts/SuperAdminLayout";
+import CustomButton from "../components/CustomButton";
+
 import useAuth from "../hooks/useAuth";
 import roles from "../constants/roles";
 
@@ -53,6 +58,9 @@ const PlannerList = () => {
 		city_id: 0,
 		password: "",
 	});
+
+	const [areas, setareas] = useState([]);
+
 	const {
 		data,
 		error,
@@ -62,6 +70,14 @@ const PlannerList = () => {
 	const user = useAuth();
 
 	const isSuperAdmin = user.role_id === roles.SUPERADMIN;
+
+	const handleAddArea = () => {
+		setareas((prev) => [...prev, {}]);
+	};
+
+	const removeArea = (index) => {
+		setareas((prev) => prev.filter((v, i) => index !== i));
+	};
 
 	const areaSelectorChange = (data) => {
 		setformState((prev) => ({
@@ -208,7 +224,7 @@ const PlannerList = () => {
 							<TableCell>City</TableCell>
 							<TableCell>Created At</TableCell>
 							{isSuperAdmin ? <TableCell>Created By</TableCell> : null}
-							<TableCell>Delete</TableCell>
+							<TableCell>Edit</TableCell>
 							<TableCell>Delete</TableCell>
 						</TableRow>
 					</TableHead>
@@ -328,24 +344,63 @@ const PlannerList = () => {
 									/>
 								</Grid>
 								<Grid item xs={12}>
-									<AreaSelector
-										onChange={areaSelectorChange}
-										defaultZoneValue={{
-											label: formState.zone_name,
-											value: formState.zone_id,
-											id: formState.zone_id,
-										}}
-										defaultStateValue={{
-											label: formState.state_name,
-											value: formState.state_id,
-											id: formState.state_id,
-										}}
-										defaultCityValue={{
-											label: formState.city_name,
-											value: formState.city_id,
-											id: formState.city_id,
-										}}
-									/>
+									<Box
+										padding={2}
+										border={"1px solid yellow"}
+										borderRadius={"md"}>
+										<AreaSelector
+											onChange={areaSelectorChange}
+											defaultZoneValue={{
+												label: formState.zone_name,
+												value: formState.zone_id,
+												id: formState.zone_id,
+											}}
+											defaultStateValue={{
+												label: formState.state_name,
+												value: formState.state_id,
+												id: formState.state_id,
+											}}
+											defaultCityValue={{
+												label: formState.city_name,
+												value: formState.city_id,
+												id: formState.city_id,
+											}}
+										/>
+									</Box>
+									{areas.map((v, i) => (
+										<Box
+											mt={4}
+											key={i}
+											padding={2}
+											border={"1px solid yellow"}
+											position={"relative"}
+											borderRadius={"md"}>
+											<IconButton
+												size="small"
+												sx={{
+													bgcolor: "grey",
+													position: "absolute",
+													right: 0,
+													top: "-1rem",
+													zIndex: 999,
+												}}
+												onClick={removeArea.bind(this, i)}>
+												<RemoveIcon />
+											</IconButton>
+											<AreaSelector />
+										</Box>
+									))}
+									<Stack
+										mt={2}
+										width={"100%"}
+										justifyContent={"flex-end"}
+										alignItems={"flex-end"}>
+										<CustomButton
+											onClick={handleAddArea}
+											startIcon={<AddIcon />}>
+											Add Area
+										</CustomButton>
+									</Stack>
 								</Grid>
 								<Grid item xs={12}>
 									<TextField

@@ -51,25 +51,12 @@ const navs = [
 		isAdmin: false,
 	},
 	{
-		title: "Marketting",
-		link: "/",
+		title: "Marketing",
+		link: "/marketing",
 		Icon: PublicIcon,
 		isSuperAdmin: true,
 		isAdmin: false,
 	},
-	{
-		title: "Briefs",
-		link: "/",
-		Icon: ViewListIcon,
-		isSuperAdmin: false,
-		isAdmin: false,
-		isController: true,
-	},
-	// {
-	// 	title: "Add Admin",
-	// 	link: "/add-admin",
-	// 	Icon: GroupAddIcon,
-	// },
 	{
 		title: "Planners",
 		link: "/planners",
@@ -77,11 +64,6 @@ const navs = [
 		isSuperAdmin: true,
 		isAdmin: true,
 	},
-	// {
-	// 	title: "Add Planner",
-	// 	link: "/add-planner",
-	// 	Icon: PersonAddAlt1Icon,
-	// },
 	{
 		title: "View Data",
 		link: "/videos",
@@ -103,6 +85,14 @@ const navs = [
 		isSuperAdmin: true,
 		isController: true,
 		isAdmin: false,
+	},
+	{
+		title: "Briefs",
+		link: "/",
+		Icon: ViewListIcon,
+		isSuperAdmin: true,
+		isAdmin: false,
+		isController: true,
 	},
 ];
 

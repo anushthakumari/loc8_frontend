@@ -26,8 +26,12 @@ export const authRouter = createBrowserRouter([
 
 export const superAdminRouter = createBrowserRouter([
 	{
-		path: "/",
+		path: "/marketing",
 		element: <Marketting />,
+	},
+	{
+		path: "/",
+		element: <BriefList />,
 	},
 	{
 		path: "/controllers",
@@ -56,6 +60,14 @@ export const superAdminRouter = createBrowserRouter([
 	{
 		path: "/create-brief",
 		element: <CreateBrief />,
+	},
+	{
+		path: "/briefs",
+		element: <BriefList />,
+	},
+	{
+		path: "/edit-brief/:brief_id",
+		element: <EditBrief />,
 	},
 ]);
 

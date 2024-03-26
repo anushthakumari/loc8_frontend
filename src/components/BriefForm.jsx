@@ -489,6 +489,7 @@ const BriefForm = ({
 													<LocalizationProvider dateAdapter={AdapterMoment}>
 														<Typography>Select Campaign Start Date</Typography>
 														<DatePicker
+															dateFormat={"YYYY/MM/dd"}
 															showIcon
 															selected={formState.startDate}
 															onChange={setDate}
