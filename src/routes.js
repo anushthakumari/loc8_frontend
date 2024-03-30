@@ -12,6 +12,9 @@ import ControllerList from "./pages/ControllerList";
 import CreateBrief from "./pages/CreateBrief";
 import BriefList from "./pages/BriefList";
 import EditBrief from "./pages/EditBrief";
+import PlannerBriefList from "./pages/Planner/BriefList";
+import PlannerBriefDetails from "./pages/Planner/BriefDetails";
+import PlannerStartPlanning from "./pages/Planner/StartPlanning";
 
 export const authRouter = createBrowserRouter([
 	{
@@ -112,6 +115,14 @@ export const controllerRouter = createBrowserRouter([
 export const plannerRouter = createBrowserRouter([
 	{
 		path: "/",
-		element: <Test />,
+		element: <PlannerBriefList />,
+	},
+	{
+		path: "/briefs/:brief_id",
+		element: <PlannerBriefDetails />,
+	},
+	{
+		path: "/briefs/:budget_id/start-planning",
+		element: <PlannerStartPlanning />,
 	},
 ]);

@@ -25,6 +25,18 @@ export async function getBriefListAPI() {
 	return data;
 }
 
+export async function getPlannerBriefListAPI() {
+	const token = loginUtils.getUser().token;
+
+	const { data } = await axios.get("briefs/planner", {
+		headers: {
+			Authorization: token,
+		},
+	});
+
+	return data;
+}
+
 export async function getPlannersAPI() {
 	const token = loginUtils.getUser().token;
 
@@ -54,6 +66,21 @@ export async function getBriefDetailsByBriefIdAPI(brief_id) {
 
 	const { data } = await axios.get(
 		"briefs/briefs/" + encodeURIComponent(brief_id),
+		{
+			headers: {
+				Authorization: token,
+			},
+		}
+	);
+
+	return data;
+}
+
+export async function getPlannerBriefDetailsByBriefIdAPI(brief_id) {
+	const token = loginUtils.getUser().token;
+
+	const { data } = await axios.get(
+		"briefs/briefs/" + encodeURIComponent(brief_id) + "/planner",
 		{
 			headers: {
 				Authorization: token,
@@ -95,6 +122,21 @@ export async function editUserAPI(
 		{
 			...body,
 		},
+		{
+			headers: {
+				Authorization: token,
+			},
+		}
+	);
+
+	return data;
+}
+
+export async function getBudgetDetailsByBudgetIdAPI(budget_id) {
+	const token = loginUtils.getUser().token;
+
+	const { data } = await axios.get(
+		"briefs/budgets/" + encodeURIComponent(budget_id),
 		{
 			headers: {
 				Authorization: token,

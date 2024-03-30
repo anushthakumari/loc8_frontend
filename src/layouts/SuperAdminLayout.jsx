@@ -93,6 +93,7 @@ const navs = [
 		isSuperAdmin: true,
 		isAdmin: false,
 		isController: true,
+		isPlanner: true,
 	},
 ];
 
@@ -159,6 +160,10 @@ export default function SuperAdminLayout({
 
 	if (userData.role_id === roles.CONTROLLER) {
 		roleNavs = navs.filter((v) => v.isController);
+	}
+
+	if (userData.role_id === roles.PLANNER) {
+		roleNavs = navs.filter((v) => v.isPlanner);
 	}
 
 	const activeNav = roleNavs.find((v) => v.link === activeLink);
