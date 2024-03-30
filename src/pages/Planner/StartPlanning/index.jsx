@@ -39,7 +39,7 @@ const StartPlanning = () => {
 					<LabelValueDisplay label="Budget" value={data.budget} isCurrency />
 				</Stack>
 			</Box>
-			<Grid mt={2} container>
+			<Grid mt={8} container>
 				<Grid md={8} item>
 					<Box>
 						<Paper>

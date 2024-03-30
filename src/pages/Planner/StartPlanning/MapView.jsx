@@ -4,20 +4,22 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 const MapView = () => {
-	// const mapRef = useRef(null);
-	// const latitude = 51.505;
-	// const longitude = -0.09;
+	const mapRef = useRef(null);
+	const latitude = 51.505;
+	const longitude = -0.09;
 
-	// return (
-	// 	<MapContainer
-	// 		center={[latitude, longitude]}
-	// 		zoom={13}
-	// 		ref={mapRef}
-	// 		style={{ height: "100vh", width: "100vw" }}>
-	// 		<TileLayer />
-	// 	</MapContainer>
-	// );
-	return <h6>map</h6>;
+	return (
+		<MapContainer
+			center={[latitude, longitude]}
+			zoom={13}
+			ref={mapRef}
+			style={{ height: "50vh", width: "100%" }}>
+			<TileLayer
+				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+			/>
+		</MapContainer>
+	);
 };
 
 export default MapView;
