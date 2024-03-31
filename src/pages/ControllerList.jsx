@@ -15,10 +15,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -60,7 +56,6 @@ const ControllerList = () => {
 		isLoading: isFetchingControllers,
 		mutate,
 	} = useSWR("/controllers", getControllersAPI);
-	const zoneDataResp = useSWR("/location/zones", getZonesAPI);
 
 	const handleClose = () => {
 		setisFormOpen(false);
@@ -86,7 +81,6 @@ const ControllerList = () => {
 			emp_id: cleanString(formState.emp_id),
 			email: cleanString(formState.email),
 			password: cleanString(formState.password || ""),
-			zone_id: formState.zone_id,
 			role_id: roles.CONTROLLER,
 		};
 
@@ -159,7 +153,7 @@ const ControllerList = () => {
 
 	return (
 		<SuperAdminLayout activeLink="/controllers">
-			{isFetchingControllers || zoneDataResp.isLoading ? (
+			{isFetchingControllers ? (
 				<center>
 					<Stack direction={"row"} alignItems={"center"} gap={1}>
 						<CircularProgress size={18} />
@@ -298,24 +292,6 @@ const ControllerList = () => {
 										onChange={handleInputChange}
 										autoComplete="email"
 									/>
-								</Grid>
-								<Grid item xs={12}>
-									<FormControl fullWidth required>
-										<InputLabel id="zone-select-label">Select Zone</InputLabel>
-										<Select
-											name="zone_id"
-											labelId="zone-select-label"
-											id="zone_id"
-											value={formState.zone_id}
-											onChange={handleInputChange}
-											required>
-											{zoneDataResp?.data
-												? zoneDataResp.data.map((v) => (
-														<MenuItem value={v.zone_id}>{v.zone_name}</MenuItem>
-												  ))
-												: null}
-										</Select>
-									</FormControl>
 								</Grid>
 								<Grid item xs={12}>
 									<TextField
