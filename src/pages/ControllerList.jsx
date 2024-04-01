@@ -22,13 +22,12 @@ import { Button, Stack, CircularProgress } from "@mui/material";
 
 import SuperAdminLayout from "../layouts/SuperAdminLayout";
 
+import { deleteUserAPI } from "../apis/admins.apis";
 import {
-	addUserAPI,
-	deleteUserAPI,
-	editUserAPI,
+	addControllerAPI,
 	getControllersAPI,
-} from "../apis/admins.apis";
-import { getZonesAPI } from "../apis/location.apis";
+	editControllerAPI,
+} from "../apis/controllers.apis";
 import roles from "../constants/roles";
 import { cleanString } from "../utils/helper.utils";
 
@@ -72,8 +71,8 @@ const ControllerList = () => {
 		setisLoading(true);
 
 		const saveAPI = !isEditing
-			? addUserAPI
-			: editUserAPI.bind(this, formState.id);
+			? addControllerAPI
+			: editControllerAPI.bind(this, formState.id);
 
 		const d = {
 			first_name: cleanString(formState.first_name),
@@ -178,7 +177,6 @@ const ControllerList = () => {
 							<TableCell>First Name</TableCell>
 							<TableCell>Last Name</TableCell>
 							<TableCell>Email</TableCell>
-							<TableCell>Zone</TableCell>
 							<TableCell>Created At</TableCell>
 							<TableCell>Edit</TableCell>
 							<TableCell>Delete</TableCell>
@@ -195,7 +193,6 @@ const ControllerList = () => {
 										</TableCell>
 										<TableCell>{row.last_name}</TableCell>
 										<TableCell>{row.email}</TableCell>
-										<TableCell>{row.zone_name}</TableCell>
 										<TableCell>{row.created_at}</TableCell>
 										<TableCell>
 											<Button

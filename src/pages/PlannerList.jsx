@@ -28,12 +28,9 @@ import CustomButton from "../components/CustomButton";
 import useAuth from "../hooks/useAuth";
 import roles from "../constants/roles";
 
-import {
-	addUserAPI,
-	getPlannersAPI,
-	deleteUserAPI,
-	editUserAPI,
-} from "../apis/admins.apis";
+import { deleteUserAPI, editUserAPI } from "../apis/admins.apis";
+
+import { addPlannerAPI, getPlannersAPI } from "../apis/planners.apis";
 
 import { cleanString } from "../utils/helper.utils";
 import { toast } from "react-toastify";
@@ -45,6 +42,10 @@ const PlannerList = () => {
 	const [deleteLoadingState, setdeleteLoadingState] = useState({
 		isLoading: false,
 		user_id: null,
+	});
+	const [areaState, setAreaState] = useState({
+		isOpen: false,
+		area: [],
 	});
 	const [isEditing, setisEditing] = useState(false);
 
@@ -65,7 +66,7 @@ const PlannerList = () => {
 		data,
 		error,
 		isLoading: fetchingPlanners,
-	} = useSWR("/admins/planners", getPlannersAPI);
+	} = useSWR("/planners/planners", getPlannersAPI);
 
 	const user = useAuth();
 
@@ -96,6 +97,13 @@ const PlannerList = () => {
 		setisFormOpen(true);
 	};
 
+	const openAssignModal = () => {
+		setAreaState({
+			isOpen: true,
+			area: [],
+		});
+	};
+
 	const handleInputChange = (e) => {
 		const name = e.target.name;
 
@@ -118,15 +126,12 @@ const PlannerList = () => {
 			emp_id: cleanString(formState.emp_id),
 			email: cleanString(formState.email),
 			password: cleanString(formState.password),
-			zone_id: formState.zone_id,
-			state_id: formState.state_id,
-			city_id: formState.city_id,
 			role_id: 1,
 		};
 
 		const saveAPI = isEditing
 			? editUserAPI.bind(this, formState.id)
-			: addUserAPI;
+			: addPlannerAPI;
 
 		saveAPI(d)
 			.then((res) => {
@@ -224,6 +229,7 @@ const PlannerList = () => {
 							<TableCell>City</TableCell>
 							<TableCell>Created At</TableCell>
 							{isSuperAdmin ? <TableCell>Created By</TableCell> : null}
+							<TableCell width={150}>Assign Area</TableCell>
 							<TableCell>Edit</TableCell>
 							<TableCell>Delete</TableCell>
 						</TableRow>
@@ -238,7 +244,7 @@ const PlannerList = () => {
 											{row.first_name}
 										</TableCell>
 										<TableCell>{row.last_name}</TableCell>
-										<TableCell>{row.user_email}</TableCell>
+										<TableCell>{row.email}</TableCell>
 										<TableCell>{row.zone_name}</TableCell>
 										<TableCell>{row.state_name}</TableCell>
 										<TableCell>{row.city_name}</TableCell>
@@ -248,6 +254,21 @@ const PlannerList = () => {
 										) : null}
 										<TableCell>
 											<Button
+												size="small"
+												variant="contained"
+												color="success"
+												disableElevation
+												onClick={openAssignModal.bind(this, row)}
+												disabled={
+													deleteLoadingState.isLoading &&
+													deleteLoadingState.user_id === row.id
+												}>
+												Assign Areas
+											</Button>
+										</TableCell>
+										<TableCell>
+											<Button
+												size="small"
 												variant="contained"
 												color="success"
 												disableElevation
@@ -261,6 +282,7 @@ const PlannerList = () => {
 										</TableCell>
 										<TableCell>
 											<Button
+												size="small"
 												variant="contained"
 												color="error"
 												disableElevation
@@ -344,65 +366,6 @@ const PlannerList = () => {
 									/>
 								</Grid>
 								<Grid item xs={12}>
-									<Box
-										padding={2}
-										border={"1px solid yellow"}
-										borderRadius={"md"}>
-										<AreaSelector
-											onChange={areaSelectorChange}
-											defaultZoneValue={{
-												label: formState.zone_name,
-												value: formState.zone_id,
-												id: formState.zone_id,
-											}}
-											defaultStateValue={{
-												label: formState.state_name,
-												value: formState.state_id,
-												id: formState.state_id,
-											}}
-											defaultCityValue={{
-												label: formState.city_name,
-												value: formState.city_id,
-												id: formState.city_id,
-											}}
-										/>
-									</Box>
-									{areas.map((v, i) => (
-										<Box
-											mt={4}
-											key={i}
-											padding={2}
-											border={"1px solid yellow"}
-											position={"relative"}
-											borderRadius={"md"}>
-											<IconButton
-												size="small"
-												sx={{
-													bgcolor: "grey",
-													position: "absolute",
-													right: 0,
-													top: "-1rem",
-													zIndex: 999,
-												}}
-												onClick={removeArea.bind(this, i)}>
-												<RemoveIcon />
-											</IconButton>
-											<AreaSelector />
-										</Box>
-									))}
-									<Stack
-										mt={2}
-										width={"100%"}
-										justifyContent={"flex-end"}
-										alignItems={"flex-end"}>
-										<CustomButton
-											onClick={handleAddArea}
-											startIcon={<AddIcon />}>
-											Add Area
-										</CustomButton>
-									</Stack>
-								</Grid>
-								<Grid item xs={12}>
 									<TextField
 										required={!isEditing}
 										fullWidth
@@ -416,6 +379,34 @@ const PlannerList = () => {
 									/>
 								</Grid>
 							</Grid>
+						</Box>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={handleClose}>Cancel</Button>
+						<Button
+							variant="contained"
+							disabled={isLoading}
+							type="submit"
+							autoFocus>
+							Add
+						</Button>
+					</DialogActions>
+				</form>
+			</Dialog>
+			<Dialog
+				open={areaState.isOpen}
+				onClose={handleClose}
+				aria-labelledby="assign-areas-title"
+				aria-describedby="assign-areas-description">
+				<form onSubmit={handleSubmit}>
+					<DialogTitle id="assign-areas-title">{"Assign Area"}</DialogTitle>
+					<DialogContent component="form">
+						<DialogContentText mb={2} id="assign-areas-description">
+							Assign Areas
+						</DialogContentText>
+
+						<Box sx={{ mt: 3, width: "500px", minHeight: "200px" }}>
+							<AreaSelector layoutDirection="row" />
 						</Box>
 					</DialogContent>
 					<DialogActions>
