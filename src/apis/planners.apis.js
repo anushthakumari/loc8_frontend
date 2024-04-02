@@ -67,3 +67,19 @@ export async function editControllerAPI(
 
 	return data;
 }
+
+export async function assignUserAreasAPI(user_id, body = []) {
+	const token = loginUtils.getUser().token;
+
+	const { data } = await axios.put(
+		"planners/planners/" + encodeURIComponent(user_id) + "/area_assign",
+		body,
+		{
+			headers: {
+				Authorization: token,
+			},
+		}
+	);
+
+	return data;
+}

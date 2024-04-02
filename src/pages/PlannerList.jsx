@@ -30,7 +30,11 @@ import roles from "../constants/roles";
 
 import { deleteUserAPI, editUserAPI } from "../apis/admins.apis";
 
-import { addPlannerAPI, getPlannersAPI } from "../apis/planners.apis";
+import {
+	addPlannerAPI,
+	assignUserAreasAPI,
+	getPlannersAPI,
+} from "../apis/planners.apis";
 
 import { cleanString } from "../utils/helper.utils";
 import { toast } from "react-toastify";
@@ -45,7 +49,7 @@ const PlannerList = () => {
 	});
 	const [areaState, setAreaState] = useState({
 		isOpen: false,
-		area: [],
+		area: [{}],
 	});
 	const [isEditing, setisEditing] = useState(false);
 
@@ -60,8 +64,6 @@ const PlannerList = () => {
 		password: "",
 	});
 
-	const [areas, setareas] = useState([]);
-
 	const {
 		data,
 		error,
@@ -73,34 +75,88 @@ const PlannerList = () => {
 	const isSuperAdmin = user.role_id === roles.SUPERADMIN;
 
 	const handleAddArea = () => {
-		setareas((prev) => [...prev, {}]);
+		setAreaState((prev) => {
+			const newArea = [...prev.area];
+
+			newArea.push({});
+
+			return {
+				...prev,
+				isOpen: prev.isOpen,
+				area: newArea,
+			};
+		});
 	};
 
 	const removeArea = (index) => {
-		setareas((prev) => prev.filter((v, i) => index !== i));
-	};
+		setAreaState((prev) => {
+			const newArea = [...prev.area];
 
-	const areaSelectorChange = (data) => {
-		setformState((prev) => ({
-			...prev,
-			zone_id: data.zone.id,
-			state_id: data.state.id,
-			city_id: data.city.id,
-		}));
+			return {
+				isOpen: prev.isOpen,
+				area: newArea.filter((v, i) => i !== index),
+			};
+		});
 	};
 
 	const handleClose = () => {
 		setisFormOpen(false);
 	};
 
+	const handleCloseAssign = () => {
+		setAreaState({
+			isOpen: false,
+			area: [],
+			user_id: null,
+		});
+	};
+
 	const openForm = () => {
 		setisFormOpen(true);
 	};
 
-	const openAssignModal = () => {
+	const openAssignModal = (row) => {
+		console.log(row);
 		setAreaState({
 			isOpen: true,
-			area: [],
+			area: row.user_areas.map((v) => {
+				return {
+					zone: { id: v.zone_id, zone_id: v.zone_id, zone_name: v.zone_name },
+					state: {
+						id: v.state_id,
+						state_id: v.state_id,
+						state_name: v.state_name,
+					},
+					city: { id: v.city_id, city_id: v.city_id, city_name: v.city_name },
+				};
+			}),
+			user_id: row.id,
+		});
+	};
+
+	const handleAreaChange = (index, obj, e) => {
+		const elementIndex = areaState.area.findIndex(
+			(c) =>
+				c?.zone?.zone_id === obj.zone.zone_id &&
+				c?.state?.state_id === obj.state.state_id &&
+				c?.city?.city_id === obj.city.city_id
+		);
+
+		if (elementIndex > -1) {
+			alert("selected zone-state-city is already assigned");
+			return;
+		}
+
+		setAreaState((prev) => {
+			const newArea = [...prev.area];
+
+			newArea[index] = obj;
+
+			return {
+				...prev,
+				isOpen: prev.isOpen,
+				area: newArea,
+			};
 		});
 	};
 
@@ -146,6 +202,42 @@ const PlannerList = () => {
 				}
 			})
 			.finally((v) => {
+				setisLoading(false);
+			});
+	};
+
+	const handleAreaAssign = (e) => {
+		e.preventDefault();
+		const isEmpty = areaState.area.some(
+			(v) => !v?.zone?.id || !v?.state?.id || !v?.city?.id
+		);
+
+		if (isEmpty) {
+			alert(
+				"Please fill all the rows avoid same combinations of zone-sate-city"
+			);
+			return;
+		}
+
+		setisLoading(true);
+
+		assignUserAreasAPI(
+			areaState.user_id,
+			areaState.area.map((v) => ({
+				zone_id: v.zone.zone_id,
+				state_id: v.state.state_id,
+				city_id: v.city.city_id,
+			}))
+		)
+			.then((v) => {
+				toast.success("Area assigned!");
+				handleCloseAssign();
+			})
+			.catch((e) => {
+				const msg = e.response?.data?.message || "Something went wrong!";
+				toast.error(msg);
+			})
+			.finally((e) => {
 				setisLoading(false);
 			});
 	};
@@ -395,28 +487,67 @@ const PlannerList = () => {
 			</Dialog>
 			<Dialog
 				open={areaState.isOpen}
-				onClose={handleClose}
+				onClose={handleCloseAssign}
 				aria-labelledby="assign-areas-title"
 				aria-describedby="assign-areas-description">
-				<form onSubmit={handleSubmit}>
+				<form onSubmit={handleAreaAssign}>
 					<DialogTitle id="assign-areas-title">{"Assign Area"}</DialogTitle>
 					<DialogContent component="form">
 						<DialogContentText mb={2} id="assign-areas-description">
 							Assign Areas
 						</DialogContentText>
 
-						<Box sx={{ mt: 3, width: "500px", minHeight: "200px" }}>
-							<AreaSelector layoutDirection="row" />
+						<Box sx={{ mt: 3, width: "500px", minHeight: "300px" }}>
+							{areaState.area.map((v, i) => {
+								return (
+									<Box
+										key={i}
+										sx={{
+											padding: "0.8rem",
+											margin: "0.4rem 0",
+											border: "1px solid #c9a90c",
+											borderRadius: "8px",
+											position: "relative",
+											width: "100%",
+										}}>
+										{i !== 0 ? (
+											<IconButton
+												size="small"
+												onClick={removeArea.bind(this, i)}
+												sx={{
+													backgroundColor: "grey",
+													position: "absolute",
+													right: "-10px",
+													top: "-20px",
+												}}>
+												<RemoveIcon />
+											</IconButton>
+										) : null}
+										<AreaSelector
+											onChange={handleAreaChange.bind(this, i)}
+											layoutDirection="row"
+											defaultCityValue={areaState.area[i].city}
+											defaultStateValue={areaState.area[i].state}
+											defaultZoneValue={areaState.area[i].zone}
+										/>
+									</Box>
+								);
+							})}
+							<Stack direction={"row"} justifyContent={"flex-end"}>
+								<CustomButton startIcon={<AddIcon />} onClick={handleAddArea}>
+									Add More
+								</CustomButton>
+							</Stack>
 						</Box>
 					</DialogContent>
 					<DialogActions>
-						<Button onClick={handleClose}>Cancel</Button>
+						<Button onClick={handleCloseAssign}>Cancel</Button>
 						<Button
 							variant="contained"
 							disabled={isLoading}
 							type="submit"
 							autoFocus>
-							Add
+							Save
 						</Button>
 					</DialogActions>
 				</form>
