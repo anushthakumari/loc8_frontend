@@ -15,6 +15,7 @@ import EditBrief from "./pages/EditBrief";
 import PlannerBriefList from "./pages/Planner/BriefList";
 import PlannerBriefDetails from "./pages/Planner/BriefDetails";
 import PlannerStartPlanning from "./pages/Planner/StartPlanning";
+import PlannerVideoDetails from "./pages/Planner/VideoDetails";
 
 export const authRouter = createBrowserRouter([
 	{
@@ -120,6 +121,10 @@ export const plannerRouter = createBrowserRouter([
 	{
 		path: "/briefs/:brief_id",
 		element: <PlannerBriefDetails />,
+	},
+	{
+		path: "/videos/:video_id/all-data",
+		element: <PlannerVideoDetails />,
 	},
 	{
 		path: "/briefs/:budget_id/start-planning",
