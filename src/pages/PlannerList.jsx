@@ -28,12 +28,13 @@ import CustomButton from "../components/CustomButton";
 import useAuth from "../hooks/useAuth";
 import roles from "../constants/roles";
 
-import { deleteUserAPI, editUserAPI } from "../apis/admins.apis";
+import { deleteUserAPI } from "../apis/admins.apis";
 
 import {
 	addPlannerAPI,
 	assignUserAreasAPI,
 	getPlannersAPI,
+	editPlannerAPI,
 } from "../apis/planners.apis";
 
 import { cleanString } from "../utils/helper.utils";
@@ -121,13 +122,24 @@ const PlannerList = () => {
 			isOpen: true,
 			area: row.user_areas.map((v) => {
 				return {
-					zone: { id: v.zone_id, zone_id: v.zone_id, zone_name: v.zone_name },
+					zone: {
+						id: v.zone_id,
+						zone_id: v.zone_id,
+						zone_name: v.zone_name,
+						label: v.zone_name,
+					},
 					state: {
 						id: v.state_id,
 						state_id: v.state_id,
 						state_name: v.state_name,
+						label: v.state_name,
 					},
-					city: { id: v.city_id, city_id: v.city_id, city_name: v.city_name },
+					city: {
+						id: v.city_id,
+						city_id: v.city_id,
+						city_name: v.city_name,
+						label: v.city_name,
+					},
 				};
 			}),
 			user_id: row.id,
@@ -186,12 +198,12 @@ const PlannerList = () => {
 		};
 
 		const saveAPI = isEditing
-			? editUserAPI.bind(this, formState.id)
+			? editPlannerAPI.bind(this, formState.id)
 			: addPlannerAPI;
 
 		saveAPI(d)
 			.then((res) => {
-				toast.success("Planner Added!");
+				toast.success("changes saved successfully!!");
 				handleClose();
 			})
 			.catch((e) => {
@@ -277,14 +289,8 @@ const PlannerList = () => {
 		setformState({
 			first_name: user.first_name,
 			last_name: user.last_name,
-			email: user.user_email,
+			email: user.email,
 			emp_id: user.employee_id,
-			zone_id: user.zone_id,
-			state_id: user.state_id,
-			city_id: user.city_id,
-			city_name: user.city_name,
-			state_name: user.state_name,
-			zone_name: user.zone_name,
 			id: user.id,
 		});
 	};
@@ -499,6 +505,7 @@ const PlannerList = () => {
 
 						<Box sx={{ mt: 3, width: "500px", minHeight: "300px" }}>
 							{areaState.area.map((v, i) => {
+								console.log(v);
 								return (
 									<Box
 										key={i}
@@ -526,9 +533,9 @@ const PlannerList = () => {
 										<AreaSelector
 											onChange={handleAreaChange.bind(this, i)}
 											layoutDirection="row"
-											defaultCityValue={areaState.area[i].city}
-											defaultStateValue={areaState.area[i].state}
-											defaultZoneValue={areaState.area[i].zone}
+											defaultCityValue={v.city}
+											defaultStateValue={v.state}
+											defaultZoneValue={v.zone}
 										/>
 									</Box>
 								);

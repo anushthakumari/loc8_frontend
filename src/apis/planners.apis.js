@@ -40,7 +40,7 @@ export async function addPlannerAPI(
 	return data;
 }
 
-export async function editControllerAPI(
+export async function editPlannerAPI(
 	user_id,
 	body = {
 		first_name: "",
@@ -48,13 +48,12 @@ export async function editControllerAPI(
 		emp_id: "",
 		email: "",
 		password: "",
-		role_id: 0,
 	}
 ) {
 	const token = loginUtils.getUser().token;
 
 	const { data } = await axios.put(
-		"controllers/controllers/" + encodeURIComponent(user_id),
+		"planners/planners/" + encodeURIComponent(user_id),
 		{
 			...body,
 		},
