@@ -1,10 +1,7 @@
 import * as React from "react";
+import { toast } from "react-toastify";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemButton from "@mui/material/ListItemButton";
-import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -15,12 +12,23 @@ import Box from "@mui/material/Box";
 import { Stack, Grid, TextField } from "@mui/material";
 import LocationPicker from "react-leaflet-location-picker";
 
+import { addPlanAPI } from "../../../apis/plans.apis";
+import Loader from "../../../components/Loader";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AddToPlan({ open, onClose }) {
+export default function AddToPlan({
+	open,
+	onClose,
+	briefId,
+	budgetId,
+	videoId,
+}) {
 	const [formState, setformState] = React.useState({});
+	const [isLoading, setisLoading] = React.useState(false);
+	const [coords, setcoords] = React.useState({ lat: 0, long: 0 });
 
 	const handleInputChange = (e) => {
 		const name = e.target.name;
@@ -61,11 +69,53 @@ export default function AddToPlan({ open, onClose }) {
 
 		control: {
 			values: pointVals,
-			onClick: (point) =>
-				console.log("I've just been clicked on the map!", point),
-			onRemove: (point) =>
-				console.log("I've just been clicked for removal :(", point),
+			onClick: (point) => {
+				setcoords({
+					lat: point[0],
+					long: point[1],
+				});
+			},
 		},
+	};
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		const data = {
+			media_type: formState.media_type.trim(),
+			illumination: formState.illumination.trim(),
+			duration: parseFloat(formState.duration),
+			cost_for_duration,
+			h: parseFloat(formState.h),
+			imp_per_month: parseFloat(formState.imp_per_month),
+			mounting: mounting_count,
+			printing: printing_count,
+			qty: parseInt(formState.qty),
+			rental_per_month: parseFloat(formState.rental_per_month),
+			size: parseInt(formState.size),
+			w: parseInt(formState.w),
+			brief_id: briefId,
+			video_id: videoId,
+			budget_id: budgetId,
+
+			location: "test",
+			latitude: coords.lat,
+			longitude: coords.long,
+		};
+
+		setisLoading(true);
+
+		addPlanAPI(data)
+			.then((res) => {
+				toast.success("Plan saved!");
+				handleClose();
+			})
+			.catch((e) => {
+				const msg = e?.response?.data?.message || "Something went wrong!";
+				toast.error(msg);
+			})
+			.finally((v) => {
+				setisLoading(false);
+			});
 	};
 
 	return (
@@ -93,20 +143,19 @@ export default function AddToPlan({ open, onClose }) {
 				justifyContent={"center"}
 				alignItems={"center"}
 				width={"100%"}>
-				<Box width={"60%"}>
-					<form>
+				<Box width={"60%"} m={3}>
+					<form onSubmit={handleSubmit}>
 						<Grid container spacing={2}>
 							<Grid item xs={12} sm={6}>
 								<TextField
-									autoComplete="given-name"
-									name="location"
 									required
 									fullWidth
-									id="location"
-									label="Location"
-									value={formState.location}
+									id="media_type"
+									label="Media Type"
+									name="media_type"
+									value={formState.media_type}
 									onChange={handleInputChange}
-									autoFocus
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
 							<Grid item xs={12} sm={6}>
@@ -119,20 +168,12 @@ export default function AddToPlan({ open, onClose }) {
 									value={formState.illumination}
 									onChange={handleInputChange}
 									label="Illumination"
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
+
 							<Grid item xs={12}>
-								<TextField
-									required
-									fullWidth
-									id="media_type"
-									label="Media Type"
-									name="media_type"
-									value={formState.media_type}
-									onChange={handleInputChange}
-								/>
-							</Grid>
-							<Grid item xs={12}>
+								<Typography variant="h6">Select Location</Typography>
 								<LocationPicker pointMode={pointMode} showControls={false} />
 							</Grid>
 							<Grid item xs={12} sm={3}>
@@ -145,6 +186,7 @@ export default function AddToPlan({ open, onClose }) {
 									name="w"
 									value={formState.w}
 									onChange={handleInputChange}
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
 							<Grid item xs={12} sm={3}>
@@ -157,6 +199,7 @@ export default function AddToPlan({ open, onClose }) {
 									name="h"
 									value={formState.h}
 									onChange={handleInputChange}
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
 							<Grid item xs={12} sm={3}>
@@ -169,6 +212,7 @@ export default function AddToPlan({ open, onClose }) {
 									name="qty"
 									value={formState.qty}
 									onChange={handleInputChange}
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
 							<Grid item xs={12} sm={3}>
@@ -181,9 +225,10 @@ export default function AddToPlan({ open, onClose }) {
 									name="size"
 									value={formState.size}
 									onChange={handleInputChange}
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
-							<Grid item xs={12} sm={3}>
+							<Grid item xs={12} sm={4}>
 								<TextField
 									type="number"
 									required
@@ -193,21 +238,10 @@ export default function AddToPlan({ open, onClose }) {
 									name="duration"
 									value={formState.duration}
 									onChange={handleInputChange}
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
-							<Grid item xs={12} sm={3}>
-								<TextField
-									type="number"
-									required
-									fullWidth
-									id="imp_per_month"
-									label="Impressions Per Month"
-									name="imp_per_month"
-									value={formState.imp_per_month}
-									onChange={handleInputChange}
-								/>
-							</Grid>
-							<Grid item xs={12} sm={3}>
+							<Grid item xs={12} sm={4}>
 								<TextField
 									type="number"
 									required
@@ -217,9 +251,10 @@ export default function AddToPlan({ open, onClose }) {
 									name="rental_per_month"
 									value={formState.rental_per_month}
 									onChange={handleInputChange}
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
-							<Grid item xs={12} sm={3}>
+							<Grid item xs={12} sm={4}>
 								<TextField
 									type="number"
 									required
@@ -229,9 +264,24 @@ export default function AddToPlan({ open, onClose }) {
 									name="cost_for_duration"
 									value={cost_for_duration}
 									onChange={handleInputChange}
+									disabled
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
-							<Grid item xs={12} sm={6}>
+							<Grid item xs={12} sm={4}>
+								<TextField
+									type="number"
+									required
+									fullWidth
+									id="imp_per_month"
+									label="Impressions Per Month"
+									name="imp_per_month"
+									value={formState.imp_per_month}
+									onChange={handleInputChange}
+									InputLabelProps={{ shrink: true }}
+								/>
+							</Grid>
+							<Grid item xs={12} sm={4}>
 								<TextField
 									type="number"
 									required
@@ -241,9 +291,10 @@ export default function AddToPlan({ open, onClose }) {
 									name="printing"
 									value={formState.printing}
 									onChange={handleInputChange}
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
-							<Grid item xs={12} sm={6}>
+							<Grid item xs={12} sm={4}>
 								<TextField
 									type="number"
 									required
@@ -253,14 +304,15 @@ export default function AddToPlan({ open, onClose }) {
 									name="mounting"
 									value={formState.mounting}
 									onChange={handleInputChange}
+									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
 							<Grid item xs={12}>
+								<Typography variant="h6">Total</Typography>
 								<TextField
 									fullWidth
 									value={total}
 									name="total"
-									label="Total"
 									type="number"
 									id="total"
 									disabled
@@ -268,13 +320,16 @@ export default function AddToPlan({ open, onClose }) {
 							</Grid>
 							<Grid item xs={12}>
 								<Stack direction={"row"} justifyContent={"flex-end"}>
-									<Button>Save</Button>
+									<Button type="submit" variant="contained">
+										Save
+									</Button>
 								</Stack>
 							</Grid>
 						</Grid>
 					</form>
 				</Box>
 			</Stack>
+			<Loader open={isLoading} />
 		</Dialog>
 	);
 }

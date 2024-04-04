@@ -6,11 +6,15 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import { Stack, Grid, Paper, Menu, MenuItem } from "@mui/material";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 
 import SuperAdminLayout from "../../../layouts/SuperAdminLayout";
 import Loader from "../../../components/Loader";
+import CustomButton from "../../../components/CustomButton";
 import MapView from "./MapView";
 import AddToPlan from "./AddToPlan";
+import PlanList from "./PlanList";
+
 import { getBudgetDetailsByBudgetIdAPI } from "../../../apis/briefs.apis";
 
 const StartPlanning = () => {
@@ -19,6 +23,8 @@ const StartPlanning = () => {
 		isOpen: false,
 		video_id: null,
 	});
+
+	const [isPlanListOpen, setIsPlanListOpen] = useState(false);
 	const navigate = useNavigate();
 
 	const {
@@ -51,20 +57,26 @@ const StartPlanning = () => {
 							`/videos/${data.videos[0].video_id}/all-data`,
 							"_blank"
 						);
+					} else {
+						alert("No Videos Found");
 					}
 				},
 			},
 			{
 				label: "Add To Plan",
 				onClick: () => {
-					setaddToPlanState({
-						isOpen: true,
-						video_id: data.videos[0].video_id,
-					});
+					if (data.videos) {
+						setaddToPlanState({
+							isOpen: true,
+							video_id: data.videos[0].video_id,
+							brief_id: data.budget?.brief_id,
+							budget_id: data.budget?.budget_id,
+						});
+					}
 				},
 			},
 		];
-	}, [data?.videos]);
+	}, [data.videos, data.budget?.brief_id, data.budget?.budget_id]);
 
 	const handlePlanClose = () => {
 		setaddToPlanState({
@@ -72,6 +84,20 @@ const StartPlanning = () => {
 			video_id: null,
 		});
 	};
+
+	const handleViewPlan = () => {
+		setIsPlanListOpen(true);
+	};
+
+	const handlePlanListClose = () => {
+		setIsPlanListOpen(false);
+	};
+
+	const totalAmount = data.plans
+		? data.plans.reduce((acc, obj) => {
+				return parseFloat(acc) + parseFloat(obj.total);
+		  }, 0)
+		: 0;
 
 	return (
 		<SuperAdminLayout activeLink={"/"}>
@@ -89,9 +115,14 @@ const StartPlanning = () => {
 						value={data.budget?.budget}
 						isCurrency
 					/>
+					<CustomButton
+						onClick={handleViewPlan}
+						endIcon={<KeyboardDoubleArrowRightIcon />}>
+						View Plan
+					</CustomButton>
 				</Stack>
 			</Box>
-			<Grid mt={8} container>
+			<Grid mt={2} spacing={2} container>
 				<Grid md={8} item>
 					<Box>
 						<Paper>
@@ -101,13 +132,28 @@ const StartPlanning = () => {
 						</Paper>
 					</Box>
 				</Grid>
-				<Grid md={4} item></Grid>
+				<Grid md={4} item>
+					<Box>
+						<LabelValueDisplay
+							value={totalAmount}
+							label="Total Plan Cost"
+							isCurrency
+						/>
+					</Box>
+				</Grid>
 			</Grid>
 			<Loader open={isLoading} />
 			<AddToPlan
 				open={addToPlanState.isOpen}
-				video_id={addToPlanState.video_id}
+				videoId={addToPlanState.video_id}
+				briefId={addToPlanState.brief_id}
+				budgetId={addToPlanState.budget_id}
 				onClose={handlePlanClose}
+			/>
+			<PlanList
+				open={isPlanListOpen}
+				data={data.plans}
+				onClose={handlePlanListClose}
 			/>
 		</SuperAdminLayout>
 	);
