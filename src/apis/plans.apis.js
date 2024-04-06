@@ -18,3 +18,15 @@ export async function addPlanAPI(body = {}) {
 
   return data;
 }
+
+export async function deletePlanById(planId) {
+  const token = loginUtils.getUser().token;
+
+  await axios.delete("plans/plans/" + encodeURIComponent(planId), {
+    headers: {
+      Authorization: token,
+    },
+  });
+
+  return true;
+}
