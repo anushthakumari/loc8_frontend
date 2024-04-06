@@ -6,8 +6,7 @@ import brief_status from "../constants/brief_status";
 
 const CHIP_COLOR = {
 	0: "red",
-	1: "orange",
-	2: "green",
+	1: "green",
 };
 
 const BriefStatusTag = ({ statusId }) => {

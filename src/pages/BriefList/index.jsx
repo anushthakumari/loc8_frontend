@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import useSWR from "swr";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
@@ -18,14 +19,20 @@ import Box from "@mui/material/Box";
 
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 import SuperAdminLayout from "../../layouts/SuperAdminLayout";
 import Loader from "../../components/Loader";
 
 import { deleteBriefAPI, getBriefListAPI } from "../../apis/briefs.apis";
 import BriefStatusTag from "../../components/BriefStatusTag";
-import { toast } from "react-toastify";
-import { ImageOutlined } from "@mui/icons-material";
+import roles from "../../constants/roles";
+import useAuth from "../../hooks/useAuth";
+
+const ALLOWED_ROLES_TO_DOWNLOAD_BRIEF_PPT = [
+	roles.SUPERADMIN,
+	roles.CONTROLLER,
+];
 
 function CountToolTip({ counts }) {
 	return (
@@ -54,6 +61,11 @@ const BriefList = () => {
 		"/briefs/briefs",
 		getBriefListAPI
 	);
+
+	const { role_id } = useAuth();
+
+	const isAllowedToDownload =
+		ALLOWED_ROLES_TO_DOWNLOAD_BRIEF_PPT.includes(role_id);
 
 	const handleDelete = (brief_id) => {
 		if (!window.confirm("Are you sure you want to delete this?")) {
@@ -185,6 +197,15 @@ const BriefList = () => {
 													size="small">
 													<DeleteIcon fontSize="15" />
 												</IconButton>
+												{isAllowedToDownload && row.status === 1 ? (
+													<IconButton
+														sx={{ bgcolor: "red", color: "white" }}
+														size="small">
+														<CloudDownloadIcon fontSize="15" />
+													</IconButton>
+												) : (
+													""
+												)}
 											</Stack>
 										</TableCell>
 									</TableRow>

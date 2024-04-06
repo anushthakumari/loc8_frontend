@@ -146,3 +146,19 @@ export async function getBudgetDetailsByBudgetIdAPI(budget_id) {
 
 	return data;
 }
+
+export async function finishPlanAPI(budget_id, brief_id) {
+	const token = loginUtils.getUser().token;
+
+	const { data } = await axios.put(
+		"briefs/budgets/" + budget_id + "/" + brief_id + "/finish",
+		{},
+		{
+			headers: {
+				Authorization: token,
+			},
+		}
+	);
+
+	return data;
+}
