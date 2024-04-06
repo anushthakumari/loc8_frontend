@@ -24,7 +24,11 @@ import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import SuperAdminLayout from "../../layouts/SuperAdminLayout";
 import Loader from "../../components/Loader";
 
-import { deleteBriefAPI, getBriefListAPI } from "../../apis/briefs.apis";
+import {
+	deleteBriefAPI,
+	downloadPlan,
+	getBriefListAPI,
+} from "../../apis/briefs.apis";
 import BriefStatusTag from "../../components/BriefStatusTag";
 import roles from "../../constants/roles";
 import useAuth from "../../hooks/useAuth";
@@ -94,6 +98,20 @@ const BriefList = () => {
 
 	const handleEdit = (brief_id) => {
 		navigate("/edit-brief/" + brief_id);
+	};
+
+	const handleDownloadPlan = (brief_id) => {
+		setisLoaderOpen(true);
+
+		downloadPlan(brief_id)
+			.then((v) => {})
+			.catch((e) => {
+				const msg = e?.response?.data?.message || "Something went wrong!";
+				toast.error(msg);
+			})
+			.finally((v) => {
+				setisLoaderOpen(false);
+			});
 	};
 
 	return (
@@ -200,6 +218,10 @@ const BriefList = () => {
 												{isAllowedToDownload && row.status === 1 ? (
 													<IconButton
 														sx={{ bgcolor: "red", color: "white" }}
+														onClick={handleDownloadPlan.bind(
+															this,
+															row.brief_id
+														)}
 														size="small">
 														<CloudDownloadIcon fontSize="15" />
 													</IconButton>

@@ -162,3 +162,24 @@ export async function finishPlanAPI(budget_id, brief_id) {
 
 	return data;
 }
+
+export async function downloadPlan(brief_id) {
+	const token = loginUtils.getUser().token;
+
+	const response = await axios.get("/briefs/briefs/" + brief_id + "/download", {
+		headers: {
+			Authorization: token,
+		},
+		responseType: "blob",
+	});
+
+	const url = window.URL.createObjectURL(new Blob([response.data]));
+	const link = document.createElement("a");
+	link.href = url;
+
+	link.setAttribute("download", "presentation.pptx");
+	document.body.appendChild(link);
+	link.click();
+
+	window.URL.revokeObjectURL(url);
+}
