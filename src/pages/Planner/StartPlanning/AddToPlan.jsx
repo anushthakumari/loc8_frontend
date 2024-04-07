@@ -255,7 +255,13 @@ export default function AddToPlan({
 
 							<Grid item xs={12}>
 								<Typography variant="h6">Select Location</Typography>
-								<LocationPicker pointMode={pointMode} showControls={false} />
+								<LocationPicker
+									// geoserver={true}
+									// geoURL="http://localhost:3000/briefs/a68333e8-8c0f-41c8-b69c-ab2e017b363f/start-planning"
+									// geoLayer="https://download.geofabrik.de/asia/india/central-zone-latest.osm.pbf"
+									pointMode={pointMode}
+									showControls={false}
+								/>
 							</Grid>
 							<Grid item xs={12} sm={3}>
 								<TextField

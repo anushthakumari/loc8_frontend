@@ -123,7 +123,6 @@ const StartPlanning = () => {
 	};
 
 	const handleDownload = () => {
-		console.log(data);
 		if (data.plans) {
 			convertToCSV(data.plans);
 		}
@@ -147,6 +146,19 @@ const StartPlanning = () => {
 			.finally((v) => {
 				setisLoaderOpen(false);
 			});
+	};
+
+	const openAddToPlan = () => {
+		if (data.videos) {
+			setaddToPlanState({
+				isOpen: true,
+				video_id: data.videos[0].video_id,
+				brief_id: data.budget?.brief_id,
+				budget_id: data.budget?.budget_id,
+			});
+		} else {
+			alert("No Videos Found");
+		}
 	};
 
 	const totalAmount = data.plans
@@ -193,6 +205,7 @@ const StartPlanning = () => {
 					<Box>
 						<Paper>
 							<CustomMenu menuItems={options}>
+								<CustomButton onClick={openAddToPlan}>Add To Plan</CustomButton>
 								<MapView />
 							</CustomMenu>
 						</Paper>
