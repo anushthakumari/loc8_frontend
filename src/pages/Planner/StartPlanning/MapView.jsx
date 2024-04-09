@@ -1,47 +1,55 @@
-import React, { useRef, useState } from "react";
-
+import React, { useRef, useEffect } from "react";
 import { MapContainer, TileLayer, Polyline, Popup } from "react-leaflet";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
 import "leaflet/dist/leaflet.css";
 
-const MapView = ({ onClick }) => {
+import base_url from "../../../constants/base_url";
+
+const defaultCenter = [51.505, -0.09];
+
+const MapView = ({ videos = [], onAddToPlan }) => {
 	const mapRef = useRef(null);
-	const latitude = 51.505;
-	const longitude = -0.09;
 
-	const center = [51.505, -0.09];
-	const polyline = [
-		[51.505, -0.09],
-		[51.51, -0.1],
-		[51.51, -0.12],
-	];
+	const lines = videos
+		.filter((v) => Boolean(v.coordinates.length))
+		.map((v) => ({
+			video_id: v.video_id,
+			filename: v.filename,
+			coords: v.coordinates.map((c) => [c.latitude, c.longitude]),
+		}));
 
-	const coordinates = [
-		{
-			from_lat: "12.92415",
-			from_long: "77.67229",
-			id: "132512",
-			to_lat: "12.92732",
-			to_long: "77.63575",
-		},
-		{
-			from_lat: "12.96691",
-			from_long: "77.74935",
-			id: "132513",
-			to_lat: "12.92768",
-			to_long: "77.62664",
-		},
-	];
-
-	const [popupPosition, setPopupPosition] = useState(null);
-
-	const handleClick = (e) => {
-		setPopupPosition(e.latlng);
+	const handleVideoOpen = (filename) => {
+		const fileurl = base_url + "videos/uploads/" + filename.split(".")[0];
+		window.open(fileurl, "_blank");
 	};
 
+	const handleVideDataOpen = (video_id) => {
+		window.open(`/videos/${video_id}/all-data`, "_blank");
+	};
+
+	useEffect(() => {
+		const center = mapRef?.current?.getCenter();
+		if (!center) {
+			return;
+		}
+		//if center is same as default
+		// even if we have line coordinates
+		//set map view to line coordinates
+		if (
+			center.lat === defaultCenter[0] &&
+			center.lng === defaultCenter[1] &&
+			lines[0]?.coords
+		) {
+			mapRef?.current?.setView(lines[0].coords[0], 12);
+		}
+	}, [lines]);
+
 	return (
-		<div onClick={onClick}>
+		<div>
 			<MapContainer
-				center={center}
+				center={defaultCenter}
 				zoom={13}
 				ref={mapRef}
 				style={{ height: "50vh", width: "100%" }}>
@@ -49,17 +57,31 @@ const MapView = ({ onClick }) => {
 					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 				/>
-				<Polyline
-					pathOptions={{ color: "lime" }}
-					positions={polyline}
-					onClick={handleClick}
-				/>
-				{popupPosition && (
-					<Popup position={popupPosition}>
-						Clicked at: ( {popupPosition.lat.toFixed(4)},{" "}
-						{popupPosition.lng.toFixed(4)} )
-					</Popup>
-				)}
+				{lines.length
+					? lines.map((c) => (
+							<Polyline
+								key={JSON.stringify(c)}
+								pathOptions={{ color: "red", weight: "10" }}
+								positions={c.coords}>
+								<Popup>
+									<List sx={{ padding: 0 }}>
+										<ListItemButton
+											onClick={handleVideoOpen.bind(this, c.filename)}>
+											<ListItemText primary="View Video" />
+										</ListItemButton>
+										<ListItemButton
+											onClick={handleVideDataOpen.bind(this, c.video_id)}>
+											<ListItemText primary="View Data" />
+										</ListItemButton>
+										<ListItemButton
+											onClick={onAddToPlan.bind(this, c.video_id)}>
+											<ListItemText primary="Add To Plan" />
+										</ListItemButton>
+									</List>
+								</Popup>
+							</Polyline>
+					  ))
+					: null}
 			</MapContainer>
 		</div>
 	);

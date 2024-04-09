@@ -94,6 +94,7 @@ const PlannerList = () => {
 			const newArea = [...prev.area];
 
 			return {
+				...prev,
 				isOpen: prev.isOpen,
 				area: newArea.filter((v, i) => i !== index),
 			};

@@ -148,11 +148,11 @@ const StartPlanning = () => {
 			});
 	};
 
-	const openAddToPlan = () => {
+	const openAddToPlan = (video_id) => {
 		if (data.videos) {
 			setaddToPlanState({
 				isOpen: true,
-				video_id: data.videos[0].video_id,
+				video_id,
 				brief_id: data.budget?.brief_id,
 				budget_id: data.budget?.budget_id,
 			});
@@ -204,10 +204,10 @@ const StartPlanning = () => {
 				<Grid md={8} item>
 					<Box>
 						<Paper>
-							<CustomMenu menuItems={options}>
-								<CustomButton onClick={openAddToPlan}>Add To Plan</CustomButton>
-								<MapView />
-							</CustomMenu>
+							{/* <CustomMenu menuItems={options}> */}
+							{/* <CustomButton onClick={openAddToPlan}>Add To Plan</CustomButton> */}
+							<MapView videos={data.videos || []} onAddToPlan={openAddToPlan} />
+							{/* </CustomMenu> */}
 						</Paper>
 					</Box>
 				</Grid>
