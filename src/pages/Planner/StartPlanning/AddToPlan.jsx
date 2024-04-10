@@ -1,6 +1,10 @@
 import * as React from "react";
 import { toast } from "react-toastify";
 import { useDropzone } from "react-dropzone";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { useMapEvents } from "react-leaflet/hooks";
+import axios from "axios";
+import L from "leaflet";
 
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -12,10 +16,19 @@ import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
 import Box from "@mui/material/Box";
 import { Stack, Grid, TextField } from "@mui/material";
-import LocationPicker from "react-leaflet-location-picker";
 
 import { addPlanAPI } from "../../../apis/plans.apis";
 import Loader from "../../../components/Loader";
+
+import "leaflet/dist/leaflet.css";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+	iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+	iconUrl: require("leaflet/dist/images/marker-icon.png"),
+	shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+});
 
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
@@ -27,10 +40,14 @@ export default function AddToPlan({
 	briefId,
 	budgetId,
 	videoId,
+	initialCoords = [],
 }) {
 	const [formState, setformState] = React.useState({});
 	const [isLoading, setisLoading] = React.useState(false);
+	const [locationText, setLocationText] = React.useState("");
 	const [coords, setcoords] = React.useState({ lat: 0, long: 0 });
+
+	const mapRef = React.useRef(null);
 
 	const onDropSiteSS = React.useCallback((acceptedFiles) => {
 		const file = acceptedFiles[0];
@@ -125,21 +142,6 @@ export default function AddToPlan({
 		cost_for_duration + printing_count + mounting_count
 	).toFixed(2);
 
-	const pointVals = [];
-	const pointMode = {
-		banner: false,
-
-		control: {
-			values: pointVals,
-			onClick: (point) => {
-				setcoords({
-					lat: point[0],
-					long: point[1],
-				});
-			},
-		},
-	};
-
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
@@ -171,7 +173,7 @@ export default function AddToPlan({
 			budget_id: budgetId,
 			map_image: formState.mapSSFile,
 			site_image: formState.siteSSFile,
-			location: "test",
+			location: locationText,
 			latitude: coords.lat,
 			longitude: coords.long,
 		};
@@ -198,6 +200,29 @@ export default function AddToPlan({
 				setisLoading(false);
 			});
 	};
+
+	React.useEffect(() => {
+		if (coords.lat && coords.long) {
+			setisLoading(true);
+			axios
+				.get("https://nominatim.openstreetmap.org/reverse", {
+					params: {
+						lat: coords.lat,
+						lon: coords.long,
+					},
+				})
+				.then((response) => {
+					const xmlData = response.data;
+					const parser = new DOMParser();
+					const xml = parser.parseFromString(xmlData, "text/xml");
+
+					setLocationText(xml.querySelector("result").textContent);
+				})
+				.finally((v) => {
+					setisLoading(false);
+				});
+		}
+	}, [coords.lat, coords.long]);
 
 	return (
 		<Dialog
@@ -255,13 +280,22 @@ export default function AddToPlan({
 
 							<Grid item xs={12}>
 								<Typography variant="h6">Select Location</Typography>
-								<LocationPicker
-									// geoserver={true}
-									// geoURL="http://localhost:3000/briefs/a68333e8-8c0f-41c8-b69c-ab2e017b363f/start-planning"
-									// geoLayer="https://download.geofabrik.de/asia/india/central-zone-latest.osm.pbf"
-									pointMode={pointMode}
-									showControls={false}
-								/>
+								{initialCoords ? (
+									<MapContainer
+										center={initialCoords}
+										zoom={11}
+										ref={mapRef}
+										style={{ height: "50vh", width: "100%" }}>
+										<TileLayer
+											attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+											url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+										/>
+										<LocationPicker setPosition={setcoords} />
+									</MapContainer>
+								) : null}
+							</Grid>
+							<Grid item xs={12} sm={12}>
+								<TextField required fullWidth value={locationText} disabled />
 							</Grid>
 							<Grid item xs={12} sm={3}>
 								<TextField
@@ -477,4 +511,21 @@ export default function AddToPlan({
 			<Loader open={isLoading} />
 		</Dialog>
 	);
+}
+
+function LocationPicker({ setPosition }) {
+	const [pos, setpos] = React.useState(null);
+
+	const map = useMapEvents({
+		click(v) {
+			setPosition({ lat: v.latlng.lat, long: v.latlng.lng });
+			setpos(v.latlng);
+		},
+	});
+
+	if (!pos) {
+		return null;
+	}
+
+	return <Marker position={pos} />;
 }

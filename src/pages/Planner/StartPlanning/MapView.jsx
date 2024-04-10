@@ -74,7 +74,7 @@ const MapView = ({ videos = [], onAddToPlan }) => {
 											<ListItemText primary="View Data" />
 										</ListItemButton>
 										<ListItemButton
-											onClick={onAddToPlan.bind(this, c.video_id)}>
+											onClick={onAddToPlan.bind(this, c.video_id, c.coords[0])}>
 											<ListItemText primary="Add To Plan" />
 										</ListItemButton>
 									</List>

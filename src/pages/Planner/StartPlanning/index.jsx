@@ -148,13 +148,14 @@ const StartPlanning = () => {
 			});
 	};
 
-	const openAddToPlan = (video_id) => {
+	const openAddToPlan = (video_id, coords = []) => {
 		if (data.videos) {
 			setaddToPlanState({
 				isOpen: true,
 				video_id,
 				brief_id: data.budget?.brief_id,
 				budget_id: data.budget?.budget_id,
+				coords,
 			});
 		} else {
 			alert("No Videos Found");
@@ -227,6 +228,7 @@ const StartPlanning = () => {
 				videoId={addToPlanState.video_id}
 				briefId={addToPlanState.brief_id}
 				budgetId={addToPlanState.budget_id}
+				initialCoords={addToPlanState.coords}
 				onClose={handlePlanClose}
 			/>
 			<PlanList
