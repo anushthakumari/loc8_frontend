@@ -23,7 +23,11 @@ import {
 	getBudgetDetailsByBudgetIdAPI,
 	finishPlanAPI,
 } from "../../../apis/briefs.apis";
-import { mapPlanCSVDownload, convertToCSV } from "../../../utils/helper.utils";
+import {
+	mapPlanCSVDownload,
+	convertToCSV,
+	getTotal,
+} from "../../../utils/helper.utils";
 
 const StartPlanning = () => {
 	const { budget_id } = useParams();
@@ -104,11 +108,28 @@ const StartPlanning = () => {
 		}
 	};
 
-	const totalAmount = data.plans
-		? data.plans.reduce((acc, obj) => {
-				return parseFloat(acc) + parseFloat(obj.total);
-		  }, 0)
+	const totalAmount = data.plans ? getTotal(data.plans, "total") : 0;
+	const totalCostForDuration = data.plans
+		? getTotal(data.plans, "cost_for_duration")
 		: 0;
+
+	const totalPrintingCost = data.plans
+		? getTotal(data.plans, "printing_cost")
+		: 0;
+
+	const totalMountingCost = data.plans
+		? getTotal(data.plans, "mounting_cost")
+		: 0;
+
+	const totalImpressions = data.plans
+		? getTotal(data.plans, "imp_per_month")
+		: 0;
+
+	const totalRentalCostMonth = data.plans
+		? getTotal(data.plans, "rental_per_month")
+		: 0;
+
+	const totalUnits = data.plans ? getTotal(data.plans, "units") : 0;
 
 	return (
 		<SuperAdminLayout activeLink={"/"}>
@@ -152,13 +173,38 @@ const StartPlanning = () => {
 					</Box>
 				</Grid>
 				<Grid md={4} item>
-					<Box>
+					<Stack gap={2}>
+						<LabelValueDisplay value={totalUnits} label="Total Units" />
 						<LabelValueDisplay
-							value={totalAmount}
-							label="Total Plan Cost"
+							value={totalRentalCostMonth}
+							label="Total Display Cost Per Month"
 							isCurrency
 						/>
-					</Box>
+						<LabelValueDisplay
+							value={totalCostForDuration}
+							label="Total Display Cost For Duration"
+							isCurrency
+						/>
+						<LabelValueDisplay
+							value={totalPrintingCost}
+							label="Total Printing Cost"
+							isCurrency
+						/>
+						<LabelValueDisplay
+							value={totalMountingCost}
+							label="Total Mounting Cost"
+							isCurrency
+						/>
+						<LabelValueDisplay
+							value={totalAmount}
+							label="Total Cost"
+							isCurrency
+						/>
+						<LabelValueDisplay
+							value={totalImpressions}
+							label="Total Impressions"
+						/>
+					</Stack>
 				</Grid>
 			</Grid>
 			<Loader open={isLoading || isLoaderOpen} />

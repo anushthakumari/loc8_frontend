@@ -90,3 +90,9 @@ export function mapPlanCSVDownload(role) {
 		return newObj;
 	};
 }
+
+export function getTotal(objectsArray = [], key = "") {
+	return objectsArray.reduce((acc, obj) => {
+		return parseFloat(acc) + parseFloat(obj[key]);
+	}, 0);
+}
