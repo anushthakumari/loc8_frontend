@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState } from "react";
 import useSWR from "swr";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
-import { Stack, Grid, Paper, Menu, MenuItem, IconButton } from "@mui/material";
+import { Stack, Grid, Paper, IconButton } from "@mui/material";
 
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import DoneIcon from "@mui/icons-material/Done";
@@ -23,21 +23,7 @@ import {
 	getBudgetDetailsByBudgetIdAPI,
 	finishPlanAPI,
 } from "../../../apis/briefs.apis";
-
-const convertToCSV = (array = []) => {
-	let csvContent = "data:text/csv;charset=utf-8,";
-
-	const headerRow = Object.keys(array[0]).join(",");
-	csvContent += headerRow + "\r\n";
-
-	array.forEach((item) => {
-		const row = Object.values(item).join(",");
-		csvContent += row + "\r\n";
-	});
-
-	const encodedUri = encodeURI(csvContent);
-	window.open(encodedUri);
-};
+import { mapPlanCSVDownload, convertToCSV } from "../../../utils/helper.utils";
 
 const StartPlanning = () => {
 	const { budget_id } = useParams();
@@ -49,7 +35,6 @@ const StartPlanning = () => {
 	const [isLoaderOpen, setisLoaderOpen] = useState(false);
 
 	const [isPlanListOpen, setIsPlanListOpen] = useState(false);
-	const navigate = useNavigate();
 
 	const {
 		data = {},
@@ -60,50 +45,6 @@ const StartPlanning = () => {
 		budget_id ? "briefs/budgets/" + budget_id : null,
 		getBudgetDetailsByBudgetIdAPI.bind(this, budget_id)
 	);
-
-	const options = useMemo(() => {
-		return [
-			{
-				label: "View Video",
-				onClick: () => {
-					if (data.videos) {
-						window.open(
-							`/videos/${data.videos[0].video_id}/all-data`,
-							"_blank"
-						);
-					}
-				},
-			},
-			{
-				label: "View Data",
-				onClick: () => {
-					if (data.videos) {
-						window.open(
-							`/videos/${data.videos[0].video_id}/all-data`,
-							"_blank"
-						);
-					} else {
-						alert("No Videos Found");
-					}
-				},
-			},
-			{
-				label: "Add To Plan",
-				onClick: () => {
-					if (data.videos) {
-						setaddToPlanState({
-							isOpen: true,
-							video_id: data.videos[0].video_id,
-							brief_id: data.budget?.brief_id,
-							budget_id: data.budget?.budget_id,
-						});
-					} else {
-						alert("No Videos Found");
-					}
-				},
-			},
-		];
-	}, [data.videos, data.budget?.brief_id, data.budget?.budget_id]);
 
 	const handlePlanClose = () => {
 		setaddToPlanState({
@@ -124,7 +65,8 @@ const StartPlanning = () => {
 
 	const handleDownload = () => {
 		if (data.plans) {
-			convertToCSV(data.plans);
+			const newData = data.plans.map(mapPlanCSVDownload("PLANNER"));
+			convertToCSV(newData);
 		}
 	};
 
@@ -205,10 +147,7 @@ const StartPlanning = () => {
 				<Grid md={8} item>
 					<Box>
 						<Paper>
-							{/* <CustomMenu menuItems={options}> */}
-							{/* <CustomButton onClick={openAddToPlan}>Add To Plan</CustomButton> */}
 							<MapView videos={data.videos || []} onAddToPlan={openAddToPlan} />
-							{/* </CustomMenu> */}
 						</Paper>
 					</Box>
 				</Grid>
@@ -270,58 +209,5 @@ function LabelValueDisplay({
 		</Stack>
 	);
 }
-
-const CustomMenu = ({ children, menuItems }) => {
-	const [anchorEl, setAnchorEl] = useState(null);
-	const menuRef = useRef(null);
-	const [position, setPosition] = useState({ left: 0, top: 0 });
-
-	const handleClickOutside = (event) => {
-		if (menuRef.current && !menuRef.current.contains(event.target)) {
-			setAnchorEl(null);
-		}
-	};
-
-	const handleContextMenu = (event) => {
-		event.preventDefault();
-		const { clientX, clientY } = event;
-		const adjustedPosition = {
-			left: clientX - menuRef.current.clientWidth / 2,
-			top: clientY - (menuRef.current.clientHeight - 150),
-		};
-		setPosition(adjustedPosition);
-		setAnchorEl(event.currentTarget);
-	};
-
-	useEffect(() => {
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => document.removeEventListener("mousedown", handleClickOutside);
-	}, []);
-
-	return (
-		<div onContextMenu={handleContextMenu} ref={menuRef}>
-			{children}
-			<Menu
-				anchorEl={anchorEl}
-				open={Boolean(anchorEl)}
-				onClose={() => setAnchorEl(null)}
-				anchorOrigin={{
-					vertical: "top",
-					horizontal: "left",
-				}}
-				transformOrigin={{
-					vertical: "top",
-					horizontal: "left",
-				}}
-				style={{ top: position.top, left: position.left }}>
-				{menuItems.map((item, index) => (
-					<MenuItem key={index} onClick={item.onClick}>
-						{item.label}
-					</MenuItem>
-				))}
-			</Menu>
-		</div>
-	);
-};
 
 export default StartPlanning;

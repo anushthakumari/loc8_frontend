@@ -19,7 +19,6 @@ import Box from "@mui/material/Box";
 
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 import SuperAdminLayout from "../../layouts/SuperAdminLayout";
 import Loader from "../../components/Loader";
@@ -28,10 +27,12 @@ import {
 	deleteBriefAPI,
 	downloadPlan,
 	getBriefListAPI,
+	getPlansByBriefIdAPI,
 } from "../../apis/briefs.apis";
 import BriefStatusTag from "../../components/BriefStatusTag";
 import roles from "../../constants/roles";
 import useAuth from "../../hooks/useAuth";
+import { mapPlanCSVDownload, convertToCSV } from "../../utils/helper.utils";
 
 const ALLOWED_ROLES_TO_DOWNLOAD_BRIEF_PPT = [
 	roles.SUPERADMIN,
@@ -108,6 +109,21 @@ const BriefList = () => {
 			.catch((e) => {
 				const msg = e?.response?.data?.message || "Something went wrong!";
 				toast.error(msg);
+			})
+			.finally((v) => {
+				setisLoaderOpen(false);
+			});
+	};
+
+	const handleDownloadCSV = (brief_id) => {
+		setisLoaderOpen(true);
+		getPlansByBriefIdAPI(brief_id)
+			.then((d) => {
+				const mappedData = d.map(mapPlanCSVDownload("CONTROLLER"));
+				convertToCSV(mappedData);
+			})
+			.catch((e) => {
+				toast.error("something went wrong!");
 			})
 			.finally((v) => {
 				setisLoaderOpen(false);
@@ -202,7 +218,11 @@ const BriefList = () => {
 											<BriefStatusTag statusId={row.status} />
 										</TableCell>
 										<TableCell align="right">
-											<Stack direction={"row"} gap={2}>
+											<Stack
+												direction={"row"}
+												alignItems={"center"}
+												justifyContent={"flex-start"}
+												gap={1}>
 												<IconButton
 													onClick={handleEdit.bind(this, row.brief_id)}
 													sx={{ bgcolor: "green", color: "white" }}
@@ -216,15 +236,34 @@ const BriefList = () => {
 													<DeleteIcon fontSize="15" />
 												</IconButton>
 												{isAllowedToDownload && row.status === 1 ? (
-													<IconButton
-														sx={{ bgcolor: "red", color: "white" }}
-														onClick={handleDownloadPlan.bind(
-															this,
-															row.brief_id
-														)}
-														size="small">
-														<CloudDownloadIcon fontSize="15" />
-													</IconButton>
+													<>
+														<IconButton
+															onClick={handleDownloadPlan.bind(
+																this,
+																row.brief_id
+															)}
+															size="small">
+															<img
+																src="/ppt.png"
+																height={30}
+																width={30}
+																alt="ppt icon"
+															/>
+														</IconButton>
+														<IconButton
+															onClick={handleDownloadCSV.bind(
+																this,
+																row.brief_id
+															)}
+															size="small">
+															<img
+																src="/csv.png"
+																height={30}
+																width={30}
+																alt="csv icon"
+															/>
+														</IconButton>
+													</>
 												) : (
 													""
 												)}

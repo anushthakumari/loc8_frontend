@@ -166,7 +166,8 @@ export default function AddToPlan({
 			printing: parseFloat(formState.printing),
 			qty: parseInt(formState.qty),
 			rental_per_month: parseFloat(formState.rental_per_month),
-			size: parseInt(formState.size),
+			size: parseFloat(formState.size),
+			units: parseFloat(formState.units),
 			w: parseInt(formState.w),
 			brief_id: briefId,
 			video_id: videoId,
@@ -355,7 +356,7 @@ export default function AddToPlan({
 									required
 									fullWidth
 									id="duration"
-									label="duration"
+									label="Duration"
 									name="duration"
 									value={formState.duration}
 									onChange={handleInputChange}
@@ -380,12 +381,11 @@ export default function AddToPlan({
 									type="number"
 									required
 									fullWidth
-									id="cost_per_duration"
-									label="Cost For Duration"
-									name="cost_for_duration"
-									value={cost_for_duration}
+									id="units"
+									label="Units"
+									name="units"
+									value={formState.units}
 									onChange={handleInputChange}
-									disabled
 									InputLabelProps={{ shrink: true }}
 								/>
 							</Grid>
@@ -408,7 +408,7 @@ export default function AddToPlan({
 									required
 									fullWidth
 									id="printing"
-									label="Printing"
+									label="Printing Rate"
 									name="printing"
 									value={formState.printing}
 									onChange={handleInputChange}
@@ -421,11 +421,56 @@ export default function AddToPlan({
 									required
 									fullWidth
 									id="mounting"
-									label="mounting"
+									label="Mounting Rate"
 									name="mounting"
 									value={formState.mounting}
 									onChange={handleInputChange}
 									InputLabelProps={{ shrink: true }}
+								/>
+							</Grid>
+							<Grid item xs={6}>
+								<Typography variant="h6">Mounting Cost</Typography>
+								<TextField
+									fullWidth
+									value={mounting_count}
+									name="Mounting Cost"
+									type="number"
+									disabled
+								/>
+							</Grid>
+							<Grid item xs={6}>
+								<Typography variant="h6">Printing Cost</Typography>
+								<TextField
+									fullWidth
+									value={printing_count}
+									name="Printing Count"
+									type="number"
+									disabled
+								/>
+							</Grid>
+							<Grid item xs={12} sm={12}>
+								<Typography variant="h6">Display Cost of Duration</Typography>
+								<TextField
+									type="number"
+									required
+									fullWidth
+									id="cost_per_duration"
+									name="cost_for_duration"
+									value={cost_for_duration}
+									onChange={handleInputChange}
+									disabled
+									InputLabelProps={{ shrink: true }}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<Typography variant="h6">Total</Typography>
+								<TextField
+									fullWidth
+									value={total}
+									name="total"
+									type="number"
+									id="total"
+									disabled
 								/>
 							</Grid>
 							<Grid sm={12} item>
@@ -487,17 +532,6 @@ export default function AddToPlan({
 								</Box>
 							</Grid>
 							<Grid item xs={12}>
-								<Typography variant="h6">Total</Typography>
-								<TextField
-									fullWidth
-									value={total}
-									name="total"
-									type="number"
-									id="total"
-									disabled
-								/>
-							</Grid>
-							<Grid item xs={12}>
 								<Stack direction={"row"} justifyContent={"flex-end"}>
 									<Button type="submit" variant="contained">
 										Save
@@ -529,3 +563,12 @@ function LocationPicker({ setPosition }) {
 
 	return <Marker position={pos} />;
 }
+
+// todo
+
+// 1) Mounting Rate
+// 2) Printing Rate
+// 3) Mounting Cost
+// 4) Printing Cost
+// 5) Total Cost (Display Cost of Duration + Printing Cost + Mounting Cost)
+// 6) Total Area = W*H*Units

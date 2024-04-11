@@ -82,9 +82,10 @@ export default function PlanList({ open, onClose, data, disableDelete }) {
 								<TableCell>Location</TableCell>
 								<TableCell align="right">Illumination</TableCell>
 								<TableCell align="right">Media Type</TableCell>
-								<TableCell align="right">W</TableCell>
-								<TableCell align="right">H</TableCell>
+								<TableCell align="right">Width</TableCell>
+								<TableCell align="right">Height</TableCell>
 								<TableCell align="right">Qty</TableCell>
+								<TableCell align="right">Units</TableCell>
 								<TableCell align="right">Size</TableCell>
 								<TableCell align="right">Duration</TableCell>
 								<TableCell align="right">Impression Per Month</TableCell>
@@ -108,9 +109,10 @@ export default function PlanList({ open, onClose, data, disableDelete }) {
 										{row.illumination}
 									</TableCell>
 									<TableCell align="right">{row.media_type}</TableCell>
-									<TableCell align="right">{row.w}</TableCell>
-									<TableCell align="right">{row.h}</TableCell>
+									<TableCell align="right">{row.width}</TableCell>
+									<TableCell align="right">{row.height}</TableCell>
 									<TableCell align="right">{row.qty}</TableCell>
+									<TableCell align="right">{row.units}</TableCell>
 									<TableCell align="right">{row.size}</TableCell>
 									<TableCell align="right">{row.duration}</TableCell>
 									<TableCell align="right">{row.imp_per_month}</TableCell>
@@ -121,10 +123,10 @@ export default function PlanList({ open, onClose, data, disableDelete }) {
 										{formatPricing(row.cost_for_duration)}
 									</TableCell>
 									<TableCell align="right">
-										{formatPricing(row.printing)}
+										{formatPricing(row.printing_cost)}
 									</TableCell>
 									<TableCell align="right">
-										{formatPricing(row.TableBodymounting)}
+										{formatPricing(row.mounting_cost)}
 									</TableCell>
 									<TableCell align="right">
 										{formatPricing(row.total)}

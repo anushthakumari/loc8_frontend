@@ -91,6 +91,21 @@ export async function getPlannerBriefDetailsByBriefIdAPI(brief_id) {
 	return data;
 }
 
+export async function getPlansByBriefIdAPI(brief_id) {
+	const token = loginUtils.getUser().token;
+
+	const { data } = await axios.get(
+		"briefs/briefs/" + encodeURIComponent(brief_id) + "/plans",
+		{
+			headers: {
+				Authorization: token,
+			},
+		}
+	);
+
+	return data;
+}
+
 export async function createBrief(formData) {
 	const token = loginUtils.getUser().token;
 
