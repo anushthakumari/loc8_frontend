@@ -344,10 +344,18 @@ const PlannerList = () => {
 										</TableCell>
 										<TableCell>{row.last_name}</TableCell>
 										<TableCell>{row.email}</TableCell>
-										<TableCell>{row.zone_name}</TableCell>
-										<TableCell>{row.state_name}</TableCell>
-										<TableCell>{row.city_name}</TableCell>
-										<TableCell>{row.created_at}</TableCell>
+										<TableCell>
+											{row.user_areas.map((v) => v.zone_name)}
+										</TableCell>
+										<TableCell>
+											{row.user_areas.map((v) => v.state_name)}
+										</TableCell>
+										<TableCell>
+											{row.user_areas.map((v) => v.city_name)}
+										</TableCell>
+										<TableCell>
+											{new Date(row.created_at).toISOString().split("T")[0]}
+										</TableCell>
 										{isSuperAdmin ? (
 											<TableCell>{row.created_by_user_email}</TableCell>
 										) : null}
