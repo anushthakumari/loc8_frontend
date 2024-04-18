@@ -33,6 +33,7 @@ import {
 	getPaginationRowModel,
 	getFacetedRowModel,
 	getFacetedUniqueValues,
+	getFacetedMinMaxValues,
 } from "@tanstack/react-table";
 
 import { rankItem } from "@tanstack/match-sorter-utils";
@@ -140,6 +141,85 @@ const columns = [
 		header: "Confidence",
 		enableColumnFilter: false,
 	}),
+	columnHelper.accessor("latitude0", {
+		header: "latitude 1",
+
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("longitude0", {
+		header: "longitude 1",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("speed0", {
+		header: "speed 1",
+		cell: ({ getValue }) => `${getValue()}km/hr`,
+		enableColumnFilter: true,
+	}),
+	columnHelper.accessor("latitude1", {
+		header: "latitude 2",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("longitude1", {
+		header: "longitude 2",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("speed1", {
+		header: "speed 2",
+		cell: ({ getValue }) => `${getValue()}km/hr`,
+		enableColumnFilter: true,
+	}),
+	columnHelper.accessor("latitude2", {
+		header: "latitude 3",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("longitude2", {
+		header: "longitude 3",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("speed2", {
+		header: "speed 3",
+		cell: ({ getValue }) => `${getValue()}km/hr`,
+		enableColumnFilter: true,
+	}),
+	columnHelper.accessor("latitude3", {
+		header: "latitude 4",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("longitude3", {
+		header: "longitude 4",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("speed3", {
+		header: "speed 4",
+		cell: ({ getValue }) => `${getValue()}km/hr`,
+		enableColumnFilter: true,
+	}),
+	columnHelper.accessor("latitude4", {
+		header: "latitude 5",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("longitude4", {
+		header: "longitude 5",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("speed4", {
+		header: "speed 5",
+		cell: ({ getValue }) => `${getValue()}km/hr`,
+		enableColumnFilter: true,
+	}),
+	columnHelper.accessor("latitude5", {
+		header: "latitude 6",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("longitude5", {
+		header: "longitude 6",
+		enableColumnFilter: false,
+	}),
+	columnHelper.accessor("speed5", {
+		header: "speed 6",
+		cell: ({ getValue }) => `${getValue()}km/hr`,
+		enableColumnFilter: true,
+	}),
 	columnHelper.accessor("created_at", {
 		header: "Created At",
 		enableColumnFilter: false,
@@ -191,6 +271,26 @@ const Videos = () => {
 		mid_p_duration: false,
 		near_p_distance: false,
 		near_p_duration: false,
+		visibility_duration: false,
+		distance_to_center: false,
+		latitude0: true,
+		longitude0: true,
+		speed0: true,
+		latitude1: false,
+		longitude1: false,
+		speed1: false,
+		latitude2: false,
+		longitude2: false,
+		speed2: false,
+		latitude3: false,
+		longitude3: false,
+		speed3: false,
+		latitude4: false,
+		longitude4: false,
+		speed4: false,
+		latitude5: false,
+		longitude5: false,
+		speed5: false,
 		created_at: false,
 	});
 
@@ -219,6 +319,7 @@ const Videos = () => {
 		onColumnFiltersChange: setColumnFilters,
 		onGlobalFilterChange: setGlobalFilter,
 		globalFilterFn: fuzzyFilter,
+		getFacetedMinMaxValues: getFacetedMinMaxValues(),
 		debugTable: true,
 		debugHeaders: true,
 		debugColumns: true,
@@ -287,7 +388,7 @@ const Videos = () => {
 														.filter((c) => c.getCanFilter())
 														.map((c) => (
 															<Box key={c.id} flexBasis={"45%"}>
-																<ASearchFilter column={c} />
+																<ASearchFilter column={c} table={table} />
 															</Box>
 														))}
 												</Stack>
