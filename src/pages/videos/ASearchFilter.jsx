@@ -27,7 +27,7 @@ export default function ASearchFilter({ column, table }) {
 						onChange={(value) =>
 							column.setFilterValue((old) => [value, old?.[1]])
 						}
-						placeholder={`Min ${
+						placeholder={`Min ${column.id} ${
 							column.getFacetedMinMaxValues()?.[0]
 								? `(${column.getFacetedMinMaxValues()?.[0]})`
 								: ""
@@ -42,7 +42,7 @@ export default function ASearchFilter({ column, table }) {
 						onChange={(value) =>
 							column.setFilterValue((old) => [old?.[0], value])
 						}
-						placeholder={`Max ${
+						placeholder={`Max ${column.id} ${
 							column.getFacetedMinMaxValues()?.[1]
 								? `(${column.getFacetedMinMaxValues()?.[1]})`
 								: ""

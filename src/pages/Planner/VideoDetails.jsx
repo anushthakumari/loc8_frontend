@@ -1,13 +1,13 @@
 import React from "react";
+import Box from "@mui/material/Box";
 
-import SuperAdminLayout from "../../layouts/SuperAdminLayout";
 import VideoData from "../../components/VideoData";
 
 const VideoDetails = () => {
 	return (
-		<SuperAdminLayout activeLink={"/"}>
+		<Box padding={3}>
 			<VideoData disableMerge />
-		</SuperAdminLayout>
+		</Box>
 	);
 };
 

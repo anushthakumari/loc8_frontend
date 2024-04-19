@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import SuperAdminLayout from "../../layouts/SuperAdminLayout";
 import BillboardTable from "./BillboardTable";
 import VideoFileDetails from "./VideoFileDetails";
+import VideoCoordinatesTable from "./VideoCoordiatesTable";
 
 import { getProcessedOutputAPI } from "../../apis/videos.apis";
 
@@ -44,6 +45,11 @@ const ProcessedOutput = () => {
 						Detected Billboards
 					</Typography>
 					<BillboardTable data={data.billboards} onMerge={handleMerge} />
+
+					<Typography my={2} variant="h6" mb={1}>
+						Detected Coordinates
+					</Typography>
+					<VideoCoordinatesTable videoCoordinates={data.video_coordinates} />
 
 					<Box mt={4}>
 						<Button LinkComponent={Link} variant="contained" to="/add-video">

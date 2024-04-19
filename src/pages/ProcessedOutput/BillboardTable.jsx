@@ -87,6 +87,12 @@ export default function BillboardTable({ data, onMerge }) {
 						<TableCell align="right">Central Distance</TableCell>
 						<TableCell align="right">Distance To Center</TableCell>
 						<TableCell align="right">Confidence</TableCell>
+						<TableCell align="right">Far P Distance</TableCell>
+						<TableCell align="right">Far P Duration</TableCell>
+						<TableCell align="right">Mid P Distance</TableCell>
+						<TableCell align="right">Mid P Duration</TableCell>
+						<TableCell align="right">Near P Distance</TableCell>
+						<TableCell align="right">Near P Duration</TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
@@ -113,6 +119,12 @@ export default function BillboardTable({ data, onMerge }) {
 							<TableCell align="right">{row.central_distance}</TableCell>
 							<TableCell align="right">{row.distance_to_center}</TableCell>
 							<TableCell align="right">{row.confidence}</TableCell>
+							<TableCell align="right">{row.far_p_distance}</TableCell>
+							<TableCell align="right">{row.far_p_duration}</TableCell>
+							<TableCell align="right">{row.mid_p_distance}</TableCell>
+							<TableCell align="right">{row.mid_p_duration}</TableCell>
+							<TableCell align="right">{row.near_p_distance}</TableCell>
+							<TableCell align="right">{row.near_p_duration}</TableCell>
 						</TableRow>
 					))}
 				</TableBody>
