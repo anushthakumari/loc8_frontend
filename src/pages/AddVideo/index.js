@@ -34,7 +34,10 @@ export default function AddVideo() {
 		city_id: null,
 		file: null,
 	});
-	const [progress, setprogress] = useState(0);
+	const [progressState, setprogressState] = useState({
+		message: "Uploading Video..",
+		progress: -1,
+	});
 
 	const citiesDataResp = useSWR(
 		selectedData.state_id
@@ -121,6 +124,7 @@ export default function AddVideo() {
 				const video_id = resp.video_details.video_id;
 
 				toast.success("video uploaded successfully!");
+				setprogressState({ progress: -1 });
 				navigate("/add-video/" + video_id + "/processed-output");
 			})
 			.catch((v) => {
@@ -140,8 +144,17 @@ export default function AddVideo() {
 		});
 
 		socketInstance.on("processing_progress", (data) => {
-			// console.log(`Received processing_progress:`, data);
-			setprogress(data.percentage);
+			setprogressState({
+				progress: data.percentage,
+				message: "processing...",
+			});
+		});
+
+		socketInstance.on("compress_progress", (data) => {
+			setprogressState({
+				progress: data.percentage,
+				message: "compressing...",
+			});
 		});
 
 		return () => {
@@ -224,7 +237,11 @@ export default function AddVideo() {
 						</Button>
 					</Box>
 				</Box>
-				<UploadProgress isLoading={isUploading} progress={progress} />
+				<UploadProgress
+					isLoading={isUploading}
+					progress={progressState.progress}
+					message={progressState.message}
+				/>
 			</Container>
 		</SuperAdminLayout>
 	);

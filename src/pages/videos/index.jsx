@@ -152,7 +152,7 @@ const columns = [
 	}),
 	columnHelper.accessor("speed0", {
 		header: "speed 1",
-		cell: ({ getValue }) => `${getValue()}km/hr`,
+		cell: ({ getValue }) => (getValue() ? `${getValue()}km/hr` : 0),
 		enableColumnFilter: true,
 	}),
 	columnHelper.accessor("latitude1", {
@@ -165,7 +165,7 @@ const columns = [
 	}),
 	columnHelper.accessor("speed1", {
 		header: "speed 2",
-		cell: ({ getValue }) => `${getValue()}km/hr`,
+		cell: ({ getValue }) => (getValue() ? `${getValue()}km/hr` : 0),
 		enableColumnFilter: true,
 	}),
 	columnHelper.accessor("latitude2", {
@@ -178,7 +178,7 @@ const columns = [
 	}),
 	columnHelper.accessor("speed2", {
 		header: "speed 3",
-		cell: ({ getValue }) => `${getValue()}km/hr`,
+		cell: ({ getValue }) => (getValue() ? `${getValue()}km/hr` : 0),
 		enableColumnFilter: true,
 	}),
 	columnHelper.accessor("latitude3", {

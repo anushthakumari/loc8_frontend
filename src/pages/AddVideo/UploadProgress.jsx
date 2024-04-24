@@ -6,7 +6,12 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 
-export default function UploadProgress({ isLoading, onClose, progress }) {
+export default function UploadProgress({
+	isLoading,
+	onClose,
+	progress,
+	message,
+}) {
 	const handleClose = () => {
 		onClose?.();
 	};
@@ -15,14 +20,16 @@ export default function UploadProgress({ isLoading, onClose, progress }) {
 		<Dialog open={isLoading} onClose={handleClose}>
 			<DialogContent>
 				<DialogContentText>
-					{progress < 1 ? (
+					{progress < 0 ? (
 						<Box
 							display={"flex"}
 							justifyContent={"center"}
 							alignItems={"center"}
 							gap={2}>
 							<CircularProgress size={22} />
-							<Typography variant="h6">Uploading Video...</Typography>
+							<Typography variant="h6">
+								{message ? message : "Uploading Video..."}
+							</Typography>
 						</Box>
 					) : (
 						<center>
@@ -51,7 +58,9 @@ export default function UploadProgress({ isLoading, onClose, progress }) {
 									</Typography>
 								</Box>
 							</Box>
-							<Typography variant="h6">Processing...</Typography>
+							<Typography variant="h6">
+								{message ? message : "Processing..."}
+							</Typography>
 						</center>
 					)}
 				</DialogContentText>
