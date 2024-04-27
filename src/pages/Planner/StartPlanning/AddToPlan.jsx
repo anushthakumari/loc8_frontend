@@ -139,7 +139,7 @@ export default function AddToPlan({
 			: 0;
 
 	const total = Number(
-		cost_for_duration + printing_count + mounting_count
+		parseFloat(cost_for_duration) + printing_count + mounting_count
 	).toFixed(2);
 
 	const handleSubmit = (e) => {
