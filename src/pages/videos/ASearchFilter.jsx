@@ -1,4 +1,7 @@
 import React, { useMemo } from "react";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+
 import DebouncedInput from "../../components/DebouncedInput";
 
 export default function ASearchFilter({ column, table }) {
@@ -17,8 +20,9 @@ export default function ASearchFilter({ column, table }) {
 
 	if (typeof firstValue === "number") {
 		return (
-			<div>
-				<div className="flex space-x-2">
+			<div className="w-full">
+				<Typography>{column.columnDef.header} Range</Typography>
+				<Stack flexDirection={"row"} alignItems={"center"}>
 					<DebouncedInput
 						type="number"
 						min={Number(column.getFacetedMinMaxValues()?.[0] ?? "")}
@@ -27,13 +31,9 @@ export default function ASearchFilter({ column, table }) {
 						onChange={(value) =>
 							column.setFilterValue((old) => [value, old?.[1]])
 						}
-						placeholder={`Min ${column.id} ${
-							column.getFacetedMinMaxValues()?.[0]
-								? `(${column.getFacetedMinMaxValues()?.[0]})`
-								: ""
-						}`}
-						className="w-24 border shadow rounded"
+						placeholder={`Min Number`}
 					/>
+
 					<DebouncedInput
 						type="number"
 						min={Number(column.getFacetedMinMaxValues()?.[0] ?? "")}
@@ -42,21 +42,16 @@ export default function ASearchFilter({ column, table }) {
 						onChange={(value) =>
 							column.setFilterValue((old) => [old?.[0], value])
 						}
-						placeholder={`Max ${column.id} ${
-							column.getFacetedMinMaxValues()?.[1]
-								? `(${column.getFacetedMinMaxValues()?.[1]})`
-								: ""
-						}`}
-						className="w-24 border shadow rounded"
+						placeholder={`Max Number`}
 					/>
-				</div>
-				<div className="h-1" />
+				</Stack>
 			</div>
 		);
 	}
 
 	return (
-		<>
+		<div className="w-full">
+			<Typography>{column.columnDef.header}</Typography>
 			<datalist id={column.id + "list"}>
 				{sortedUniqueValues.map((value) => (
 					<option value={value} key={value} />
@@ -66,12 +61,12 @@ export default function ASearchFilter({ column, table }) {
 				type="text"
 				value={columnFilterValue ?? ""}
 				onChange={(value) => column.setFilterValue(value)}
-				label={`Search ${column.columnDef.header}`}
+				// label={`Search ${column.columnDef.header}`}
 				className="w-36 border shadow rounded"
 				inputProps={{
 					list: column.id + "list",
 				}}
 			/>
-		</>
+		</div>
 	);
 }

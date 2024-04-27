@@ -56,6 +56,8 @@ import base_url from "../../constants/base_url";
 
 const columnHelper = createColumnHelper();
 
+const speedCell = ({ getValue }) => `${getValue()}km/hr`;
+
 const columns = [
 	columnHelper.accessor("id", {
 		header: "Billboard Id",
@@ -152,6 +154,7 @@ const columns = [
 	}),
 	columnHelper.accessor("speed0", {
 		header: "speed 1",
+		cell: speedCell,
 		enableColumnFilter: true,
 	}),
 	columnHelper.accessor("latitude1", {
@@ -164,6 +167,7 @@ const columns = [
 	}),
 	columnHelper.accessor("speed1", {
 		header: "speed 2",
+		cell: speedCell,
 		enableColumnFilter: true,
 	}),
 	columnHelper.accessor("latitude2", {
@@ -176,6 +180,7 @@ const columns = [
 	}),
 	columnHelper.accessor("speed2", {
 		header: "speed 3",
+		cell: speedCell,
 		enableColumnFilter: true,
 	}),
 	columnHelper.accessor("latitude3", {
@@ -188,7 +193,7 @@ const columns = [
 	}),
 	columnHelper.accessor("speed3", {
 		header: "speed 4",
-		cell: ({ getValue }) => `${getValue()}km/hr`,
+		cell: speedCell,
 		enableColumnFilter: true,
 	}),
 	columnHelper.accessor("latitude4", {
@@ -201,7 +206,7 @@ const columns = [
 	}),
 	columnHelper.accessor("speed4", {
 		header: "speed 5",
-		cell: ({ getValue }) => `${getValue()}km/hr`,
+		cell: speedCell,
 		enableColumnFilter: true,
 	}),
 	columnHelper.accessor("latitude5", {
@@ -214,7 +219,7 @@ const columns = [
 	}),
 	columnHelper.accessor("speed5", {
 		header: "speed 6",
-		cell: ({ getValue }) => `${getValue()}km/hr`,
+		cell: speedCell,
 		enableColumnFilter: true,
 	}),
 	columnHelper.accessor("created_at", {
@@ -376,15 +381,14 @@ const Videos = () => {
 											title={
 												<Stack
 													m={2}
-													maxWidth={"450px"}
 													direction={"row"}
 													flexWrap={"wrap"}
 													gap={2}>
 													{table
 														.getAllColumns()
-														.filter((c) => c.getCanFilter())
+														.filter((c) => c.getCanFilter() && c.getIsVisible())
 														.map((c) => (
-															<Box key={c.id} flexBasis={"45%"}>
+															<Box key={c.id} flex={1} minWidth={"300px"}>
 																<ASearchFilter column={c} table={table} />
 															</Box>
 														))}

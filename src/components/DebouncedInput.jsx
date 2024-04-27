@@ -32,6 +32,7 @@ export default function DebouncedInput({
 				...props.inputProps,
 			}}
 			placeholder="search here.."
+			fullWidth
 			{...props}
 			value={value}
 			onChange={(e) => setValue(e.target.value)}
